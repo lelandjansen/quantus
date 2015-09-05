@@ -11,27 +11,9 @@
 double measurePingTime() {
 
   // Global variables: triggerPin and echoPin
-  // These are the digital pin numbers to which the ultrasonic sensor is connected
+  // These are the digital pins to which the ultrasonic sensor is connected
 
   double pingTime;
-
-
-  
-
-  // !!!!! This was in the original function. Is it necessary?
-
-
-  // Set triggerPin to LOW
-  // Stop producing ultrasonic signal
-  digitalWrite(triggerPin, LOW);
-
-  // Let signal settel
-  // Delay 2000 microseconds (2 milliseconds)
-  delayMicroseconds(2000);
-
-  
-
-
 
   // Set triggerPin to HIGH
   // Produce ultrasonic signal
@@ -48,13 +30,7 @@ double measurePingTime() {
   // Determine time taken for echoPin to reciece HIGH signal from triggerPin
   // Measured in microseconds
   // Divide by 1 million to convert microseconds to seconds
-  pingTime = pulseIn(echoPin, HIGH) / 1.0e6;
-
-  /*
-  Serial.print("pingTime: \t");
-  Serial.print(pingTime, 10);
-  Serial.println(" s");
-  */
+  pingTime = pulseIn(echoPin, HIGH) / 1.e6;
   
   return pingTime;
 
