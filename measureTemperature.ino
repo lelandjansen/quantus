@@ -22,12 +22,6 @@ double measureTemperature() {
   // Formula specified in TMP36 datasheet
   temperature = (voltage - 0.5) * 100.;
 
-  /*
-  Serial.print("temperature: \t");
-  Serial.print(temperature, 4);
-  Serial.println(" C");
-  */
-
   return temperature;
   
 }
