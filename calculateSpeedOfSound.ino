@@ -4,6 +4,13 @@
   Copyright (c) Leland Jansen 2015. All rights reserved.
 */
 
+/*
+  Speed of sound algorithm attribution:
+  INSTITUTE OF PHYSICS PUBLISHING
+  An ultrasonic air temperature measurement system with self-correction function for humidity
+  Authors: Wen-Yuan Tsai1, Hsin-Chieh Chen1, and Teh-Lu Liao
+*/
+
 
 #include <math.h>
 
@@ -18,7 +25,7 @@ double calculateSpeedOfSound(double T, double H, double P) {
 
     // Convert temperature from degrees Celsius to kelvin
     T += 273.15;
-      
+
     // Constants
     // Universal gas constant (J/(mol K))
     double R = 8.3145e3;
@@ -55,7 +62,7 @@ double calculateSpeedOfSound(double T, double H, double P) {
     Serial.print(speedOfSound, 4);
     Serial.println(" m/s");
     */
-    
+
     return speedOfSound;
 
 }
