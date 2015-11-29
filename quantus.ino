@@ -1,116 +1,116 @@
-/*
-  Quantus
-  quantus.ino
-  Copyright (c) Leland Jansen 2015. All rights reserved.
-*/
+// QUANTUS
+// quantus.cpp
 
-
-// Measure distance between an ultrasonic sensor and the target at user-specified interval
-// Prints the result to the serial monitor
-
-
-// Global variables
-
-// Hardware pins
-int onboardLEDPin  = 13; // Digital
-int temperaturePin =  0; // Analog
-int triggerPin     = 5; // Digital
-int echoPin        = 6; // Digital
-
-
-double measurementRate = 20; // Measurements per second
-double measurementInterval = (1. / measurementRate) * 1.e3; // Convert to millisecond delay
-
-int totalMeasurements = 200; // Total number of measurements taken
-int counter = 0; // Number of times measurement has been taken
+#include "quantus.h"
 
 
 void setup() {
 
-  // Pin setup
-  
-  // Set onboardLEDPin as output
-  pinMode(onboardLEDPin, OUTPUT);
-
-  // Set temperaturePin as input
-  pinMode(temperaturePin, INPUT);
-
-  // Set triggerPin as output
-  pinMode(triggerPin, OUTPUT);
-
-  // Set echoPin as input
-  pinMode(echoPin, INPUT);
-
-
-
-  // Initially set triggerPin to send a low signal
-  digitalWrite(triggerPin, LOW);
-
-
-
-  // Initialize serial port
+  // Open serial communictions
   Serial.begin(9600);
 
-  
-  // LED countdown
-  // Blink five times (five seconds total) before collecting data
-  for (int i = 3; i > 0; i--) {
-    //Serial.println(i);
-    digitalWrite(onboardLEDPin, HIGH);
-    delay(200);
-    digitalWrite(onboardLEDPin, LOW);
-    delay(800);
-  }
-  digitalWrite(onboardLEDPin, HIGH);
-  
-}
+
+  blueLED();
+
+  // Set up Arduino pins
+  pinSetup();
+
+  // Initialize SD card
+  sdSetup();
+
+
+  uint32_t startTime;
+  uint32_t pointTime;
+  uint32_t computationDelay;
+  uint32_t frequency         = getFrequency();
+  uint32_t period            = 1.e6 / frequency;
+  double   humidity          = getConstantsFromSD('H');
+  double   pressure          = getConstantsFromSD('P');
+  double   distance;
+  double   temperature;
+  double   pingTime;
+  double   speedOfSound;
+
+  Serial.println("Data file setup");
+  dataFileSetup(frequency, humidity, pressure);
+  Serial.println("Data file setup complete");
+
+
+  // Loop indefinitely
+  while (1) {
+    // Make LED green to indicate standby
+    cyanLED();
+
+
+    while (!buttonPress()) {
+      // Take no action
+    }
+    blueLED();
+    delay(500);
+    // When button has been pressed, count down for three seconds
+    for (int i = 0; i < 3; i++) {
+      greenLED();
+      delay(100);
+      blueLED();
+      delay(800);
+    }
+
+    greenLED();
+
+    startTime = micros();
+
+    // While the button has not yet been pressed
+    // Maximum number of data points in one session: 2048
+    for (int i = 0; i < 2048; i++) {
+
+      if (buttonPress()) {
+        break;
+      }
+
+      pointTime    = micros();
+      temperature  = measureTemperature();
+      pingTime     = (double)measurePingTime(period);
+      // If measurePingTime timed out
+      if (!pingTime) {
+        // Skip that measurement
+        continue;
+      }
+      speedOfSound = calculateSpeedOfSound(temperature, humidity, pressure);
+      distance     = calculateTargetDistance(pingTime, speedOfSound);
+
+      if (distance >= 0.002 && distance <= 4.) {
+        writeDataToFile(((double)(pointTime - startTime))/(1.e6), distance);
+      }
+
+      computationDelay = period - (micros() - pointTime);
+      if (computationDelay > period) {
+        computationDelay = 0;
+      }
+
+      delayMicroseconds(computationDelay);
+
+
+    }
+
+    blueLED();
+    delay(1000);
+
+  } // End of while (will never end)
+
+
+
+} // End of setup
+
 
 
 
 
 
 void loop() {
-  
-
-  if (counter < 200) {
-  
-    double temperature, humidity, pressure, speedOfSound, pingTime, targetDistance;
-
-    uint32_t startTime = micros();
-  
-    // Take ambient temperature measurement
-    temperature = measureTemperature(); // degrees Celsius
-  
-    // Set relative humidity
-    humidity = 0.5; // fraction
-    
-    // Set ambient pressure
-    pressure = 1.01325e5; // Pascales
-  
-    // Calculate speed of sound in air
-    speedOfSound = calculateSpeedOfSound(temperature, humidity, pressure); // metres per second
-    
-    // Measure ultrasonic ping time
-    pingTime = measurePingTime(); // seconds
-  
-    // Calculate distance to target
-    targetDistance = calculateTargetDistance(pingTime, speedOfSound); // centimetres
 
 
-    uint32_t endTime = micros();
 
-    Serial.println(endTime-startTime );
-  
-    
-    // Print target distance to serial monitor in centimetres
-    //Serial.println(targetDistance, 4); // 4 decimal places
-    
-    counter += 1;
-  
-    // Delay for the user-specified interval
-    delay(measurementInterval);
-    //delayMicroseconds(15625);
-  
-  }
 
-}
+} // End of loop
+
+// That's all folks!

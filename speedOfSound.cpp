@@ -1,8 +1,7 @@
-/*
-  Quantus
-  calculateSpeedOfSound.ino
-  Copyright (c) Leland Jansen 2015. All rights reserved.
-*/
+// QUANTUS
+// speedOfSound.cpp
+
+#include "speedOfSound.h"
 
 /*
   Speed of sound algorithm attribution:
@@ -10,9 +9,6 @@
   An ultrasonic air temperature measurement system with self-correction function for humidity
   Authors: Wen-Yuan Tsai1, Hsin-Chieh Chen1, and Teh-Lu Liao
 */
-
-
-#include <math.h>
 
 
 // Calculate the speed of sound in the given conditions
