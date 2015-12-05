@@ -11,6 +11,25 @@
 
 
 // Arduino Degital Pins
+
+// Pin 0: Unused
+// Pin 1: Unused
+#define BUTTON                2
+#define LED_RED               3
+#define CHIP_SELECT           4
+#define LED_GREEN             5
+#define LED_BLUE              6
+#define ULTRASONIC_TRIGGER    7
+#define ULTRASONIC_ECHO       8
+// Pin 9: Unused
+#define SD_RESERVED          10
+// #define MOSI                 11
+// #define MISO                 12
+// #define CLK                  13
+
+
+
+/*
 const int BUTTON              =  0;
 const int LED_RED             =  1;
 const int LED_GREEN           =  2;
@@ -25,10 +44,13 @@ const int SD_RESERVED         = 10; // Pin 10 must be unused (and set as an oupu
 // Pin 11: MOSI for SD
 // Pin 12: MISO for SD
 // Pin 13: CLK for SD
+*/
+
+
 
 
 // Arduino analog pins
-const int TEMPERATURE_PIN     =  0;
+#define TEMPERATURE_PIN      0
 // Pin 1: Unused
 // Pin 2: Unused
 // Pin 3: Unused
