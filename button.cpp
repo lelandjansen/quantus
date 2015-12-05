@@ -12,10 +12,10 @@ bool buttonPress() {
   // !!! Implement debounce code later
 
   if (digitalRead(BUTTON) == HIGH) {
-    return 1;
+    return 0;
   }
   else {
-    return 0;
+    return 1;
   }
 
 }
