@@ -1,24 +1,34 @@
 // QUANTUS
 // pinSetup.cpp
 
-#include "pinSetup.h"
+#include "pinSetup.hpp"
+
 
 void pinSetup() {
 
+
   // Digital pin setup
-  pinMode(BUTTON,             INPUT);
-  pinMode(LED_RED,            OUTPUT);
-  pinMode(LED_GREEN,          OUTPUT);
-  pinMode(LED_BLUE,           OUTPUT);
-  pinMode(CHIP_SELECT,        OUTPUT);
+
+  // Button (interrupt)
+  pinMode(BUTTON, INPUT);
+  attachInterrupt(digitalPinToInterrupt(BUTTON), buttonPress,  FALLING);
+
+  // RGB LED
+  pinMode(LED_RED,    OUTPUT);
+  pinMode(LED_GREEN,  OUTPUT);
+  pinMode(LED_BLUE,   OUTPUT);
+
+  // SD card
+  pinMode(CHIP_SELECT, OUTPUT);
+
+  // !!!! Attach CD pin as interrupt
+  // https://developer.mbed.org/cookbook/SD-Card-File-System
+
+
+
+  // Ultrasonic sensor
   pinMode(ULTRASONIC_TRIGGER, OUTPUT);
   pinMode(ULTRASONIC_ECHO,    INPUT);
-  // pinMode(FREQUENCY_SELECT_1, INPUT);
-  // pinMode(FREQUENCY_SELECT_2, INPUT);
-  // pinMode(FREQUENCY_SELECT_3, INPUT);
-  pinMode(SD_RESERVED,        OUTPUT);
-  // Pin 11: MOSI for SD
-  // Pin 12: MISO for SD
-  // Pin 13: CLK for SD
 
-}
+
+} // End of pinSetup

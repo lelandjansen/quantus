@@ -1,18 +1,18 @@
 // QUANTUS
-// pingTime.cpp
+// pingTime
 
-#include "pingTime.h"
+#include "pingTime.hpp"
+
 
 // Measure time taken for an ultrasonic signal to travel to target and return
 // Hardware: Cytron HC-SRO4 Ultrasonic Sensor
-// Returns ping time (time for ultrasonic signal to travel to target and return) in seconds
 // Timeout in microseconds
-uint32_t measurePingTime(uint32_t timeout) {
+double measurePingTime() {
 
-  // Global variables: triggerPin and echoPin
-  // These are the digital pins to which the ultrasonic sensor is connected
-
-  uint32_t pingTime;
+  uint32_t pingTime; // microseconds
+  uint32_t timeout = 14000; // microseconds
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // CONFIRM APPROPRIATE TIMEOUT VALUE
 
   // Set triggerPin to HIGH
   // Produce ultrasonic signal
@@ -31,6 +31,7 @@ uint32_t measurePingTime(uint32_t timeout) {
   // Divide by 1 million to convert microseconds to seconds
   pingTime = pulseIn(ULTRASONIC_ECHO, HIGH, timeout);
 
-  return pingTime;
+  // Convert from microseconds to seconds
+  return (double)pingTime * 1.e-6;
 
-}
+} // End of measurePingTime

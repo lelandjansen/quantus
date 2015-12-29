@@ -1,64 +1,97 @@
 // QUANTUS
 // speedOfSound.cpp
 
-#include "speedOfSound.h"
+/* REFERENCE for speed of sound calculation
+ * O.Cramer, "The variation of the specific heat ratio and the speed of sound in
+ *   air with temperature, pressure, humidity, and CO2 concentration,"
+ *   J. Acoust. Soc. Am. 93, 2510-2516 (1993).
+ */
 
-/*
-  Speed of sound algorithm attribution:
-  INSTITUTE OF PHYSICS PUBLISHING
-  An ultrasonic air temperature measurement system with self-correction function for humidity
-  Authors: Wen-Yuan Tsai1, Hsin-Chieh Chen1, and Teh-Lu Liao
-*/
-
-
-// Calculate the speed of sound in the given conditions
-// Accepts three parameters: T, H, and P
-// T is the air temperature (measured in degrees Celsius)
-// H is the relative humidity (measured as a fraction)
-// P is the ambient pressure (measured in Pascales)
-// Returns the speed of sound in metres per second
-double calculateSpeedOfSound(double T, double H, double P) {
-
-    // Convert temperature from degrees Celsius to kelvin
-    T += 273.15;
-
-    // Constants
-    // Universal gas constant (J/(mol K))
-    double R = 8.3145e3;
-    // Molar mass of dry air (g/mol)
-    double mmAir = 28.96;
-    // Molar mass of water (g/mol)
-    double mmH2O = 18.03;
-    // A (from 1 to 100 Celsius) (mmHg)
-    double A = 8.07131;
-    // B (from 1 to 100 Celsius) (mmHg)
-    double B = 1730.63;
-    // C (from 1 to 100 Celsius) (mmHg)
-    double C = 233.426;
+#include "speedOfSound.hpp"
 
 
-    // Vapor pressure (Pa)
-    double V = pow(10, A - B/(C + T - 273.15)) * 1.01325e5/760.;
+double computeSpeedOfSound(double temperature) {
 
-    // Fraction of molecules that are water
-    double h = (H * V) / (100. * P);
+  // DELETE
+  // return 344.66;
 
-    // Mean molecular weight of moist air
-    double M = mmAir - (mmAir - mmH2O) * h;
+  // Input variables
+  double t  = temperature;              // Temperature (degrees Celsius)
+  double p  = settings.pressure;        // Atmospheric pressure (Pascales)
+  double h  = settings.humidity;        // Relative humidity (fraction)
+  double xc = settings.CO2MoleFraction; // Carbon dioxide mole fraction (fraction)
 
-    // Adiabatic constant of moist air
-    double y = (7. + h) / (5. + h);
+  // Computed variables
+  double c;    // Speed of sound in air (metres per second)
+  double T;    // Temperature in (Kelvin)
+  double xw;   // Water vapor mole fraction (fraction)
+  double f;    // Enhancement factor
+  double psv;  // Saturation vapor pressure of water vapor in air (Aascales)
+
+  // Coefficients: Speed of sound in air
+  const double a0   =  331.5024;
+  const double a1   =    0.603055;
+  const double a2   =   -0.000528;
+  const double a3   =   51.471935;
+  const double a4   =    0.1495874;
+  const double a5   =   -0.000782;
+  const double a6   =   -1.82e-7;
+  const double a7   =    3.73e-8;
+  const double a8   =   -2.93e-10;
+  const double a9   =  -85.20931;
+  const double a10  =   -0.228525;
+  const double a11  =    5.91e-5;
+  const double a12  =   -2.835149;
+  const double a13  =   -2.15e-13;
+  const double a14  =   29.179762;
+  const double a15  =    0.000486;
+
+  // Coefficients: Saturation vapor pressure of water vapor in air
+  const double a16  =    1.2188105e-5;
+  const double a17  =   -1.9509874e-2;
+  const double a18  =   34.04926034;
+  const double a19  =   -6.3536311e3;
+
+  // Coefficients: Enhancement factor
+  const double a20  =    1.00062;
+  const double a21  =    3.14e-8;
+  const double a22  =    5.6e-7;
 
 
-    // Speed of sound (m/s)
-    double speedOfSound = sqrt(y * R * T / M);
+  // Temperature (Kelvin)
+  T = t + 273.15;
 
-    /*
-    Serial.print("speedOfSound: \t");
-    Serial.print(speedOfSound, 4);
-    Serial.println(" m/s");
-    */
 
-    return speedOfSound;
+  // Enhancement factor
+  f    =  a20;
+  f   +=  a21 * p;
+  f   +=  a22 * t   * t;
 
-}
+
+  // Saturation vapor pressure of water vapor in air (Pascales)
+  psv  =  a16  * T   * T;
+  psv +=  a17  * T;
+  psv +=  a18;
+  psv +=  a19  / T;
+  psv  =  exp(psv);
+
+
+  // Mole fraction of water vapor in air (fraction)
+  xw   =  h   * f   * psv / p;
+
+
+  // Speed of sound in air (metres per second)
+  c    =  a0  + a1  * t   + a2  * t   * t;
+  c   += (a3  + a4  * t   + a5  * t   * t) * xw;
+  c   += (a6  + a7  * t   + a8  * t   * t) * p;
+  c   += (a9  + a10 * t   + a11 * t   * t) * xc;
+  c   +=  a12 * xw  * xw;
+  c   +=  a13 * p   * p;
+  c   +=  a14 * xc  * xc;
+  c   +=  a15 * xw  * p * xc;
+
+
+  return c;
+
+
+} // End of computeSpeedOfSound

@@ -1,166 +1,327 @@
 // QUANTUS
 // sd.cpp
 
+#include "sd.hpp"
 
-#include "sd.h"
 
-// Initialize file type
+// DELETE
+#include <Arduino.h>
+
+
+int dataFileNumber;
 File dataFile;
+File settingsFile;
+File errorFile;
 char dataFileName[13];
+
+
+
+
+// State while no SD card is inserted
+void noSD() {
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // NO SD CODE
+} // End of noSD
+
+
+
+// DELETE
+// ALSO REMOVE FROM sd.hpp
+// bool openDataFile() {
+//
+//   dataFile = SD.open(dataFileName, FILE_WRITE);
+//     if (dataFile) {
+//       return true;
+//     }
+//     else {
+//       return false;
+//     }
+// } // End of openDataFile
+//
+//
+// void closeDataFile() {
+//   dataFile.close();
+// }
+
+
+
+
+
+bool errorLogSetup() {
+
+  // Check if the file "ERRORLOG.txt" exists
+  // If not, create it
+  // Append new error log header
+
+  if (!SD.exists("ERRORLOG.txt")) {
+    errorFile = SD.open("ERRORLOG.txt", FILE_WRITE);
+    if (errorFile) {
+      errorFile.println(F("QUANTUS ERROR LOG"));
+      errorFile.close();
+    }
+    else {
+      return false;
+    }
+  }
+  errorFile = SD.open("ERRORLOG.txt", FILE_WRITE);
+  if (errorFile) {
+    errorFile.println();
+    errorFile.println(F("__________________________________________________"));
+    errorFile.close();
+  }
+  else {
+    return false;
+  }
+
+  return true;
+
+} // End of errorLogSetup
+
+
+
+
+
+bool getSettingsFromFile() {
+
+  if (!SD.exists("SETTINGS")) {
+    SD.mkdir("SETTINGS");
+  }
+
+  /*
+
+  // Temperature
+  if (SD.exists("SETTINGS/TEMP.txt")) {
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    settingsFile = SD.open("SETTINGS/TEMP.txt", FILE_READ);
+    if (settingsFile) {
+      // read file to array
+      // convert
+      // DELETE
+      settings.autoTemperature = true;
+      settings.temperature     = 20;
+      if (settings.temperature < minimumSettings.temperature
+       || settings.temperature > maximumSettings.temperature) {
+          // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          // Warning: temperature values out of range
+          NEXT_STATE = STATE_WARNING;
+      }
+      settingsFile.close();
+    }
+    else {
+      return false;
+    }
+  }
+  else {
+    settingsFile = SD.open("SETTINGS/TEMP.txt", FILE_WRITE);
+    if (settingsFile) {
+      settingsFile.print("auto");
+      settingsFile.close();
+    }
+    else {
+      return false;
+    }
+  }
+
+  */
+
+  // DELETE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  settings = defaultSettings;
+
+  return true;
+
+} // End of getSettingsFromFile
+
+
+
+
+
+void nextDataFileName() {
+  dataFileNumber++;
+  sprintf(dataFileName, "QNTS_%03i.csv", dataFileNumber);
+} // End of nextDataFileName
+
+
+
+
+
+void determineDataFileNumber() {
+  // Determine the number of the next data file
+  for (dataFileNumber = 999; dataFileNumber >= 0; dataFileNumber--) {
+    sprintf(dataFileName, "QNTS_%03i.csv", dataFileNumber);
+    if (SD.exists(dataFileName) || dataFileNumber == 0) {
+      nextDataFileName();
+      break;
+    }
+  }
+} // End of determineDataFileNumber
+
+
 
 
 
 void sdSetup() {
 
-  Serial.println("Initializing SD card.");
-
   // Try to initialize SD card
-  // If initialization fails, print error to serial monitor
+  // If the SD card cannot be initialized, go to no SD state
   if (!SD.begin(CHIP_SELECT)) {
-    Serial.println("Initialization failed!");
-    // Loop indefinitely
-    // Blink status LED red
-    while (1) {
-      redLED();
-      delay(1000);
-      offLED();
-      delay(1000);
-    }
+    NEXT_STATE = STATE_NO_SD;
+    return;
   }
 
-  // If initialization succeeds
-  Serial.println("Initialization done.");
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Check available space on SD card
+    // If SD card is almost full
+      // Warning: SD card almost full
+    // If SD card is full
+      // Error: SD card is full
+
+
+
+  // Set up error log file
+  if (!errorLogSetup()) {
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // ERROR CODE
+    NEXT_STATE = STATE_NO_SD;
+    return;
+  }
+
+
+  // Get settings from file
+  if (!getSettingsFromFile()) {
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // ERROR CODE
+    NEXT_STATE = STATE_NO_SD;
+    return;
+  }
+
+
+  // Determine data file number
+  determineDataFileNumber();
+
+  // If data file number is between 990 and 999
+  // Warn that 10 or less data files can be created
+  if (dataFileNumber > 989 && dataFileNumber < 1000) {
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // WARNING: 10 or less data files can be created
+    NEXT_STATE = STATE_WARNING;
+  }
+  // If data file number is 1000
+  // No more data files can be created
+  else if (dataFileNumber == 1000) {
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // ERROR: No more data files can be created
+    NEXT_STATE = STATE_ERROR;
+    return;
+  }
+
+
+  if (NEXT_STATE != STATE_WARNING) {
+    NEXT_STATE = STATE_STANDBY;
+  }
 
 } // End of sdSetup
 
 
 
 
-
-double getConstantsFromSD(char constantName) {
-
-  // Possible values for constantName:
-  // pressure (P), pressureError (p), humidity (H), humidityError (h)
-  // !!! Implement error in pressure and humidity later
-
-  char*  fileName;
-  double defaultValue, minimum, maximum;
-  double fileValue;
-  double value;
-
-
-  // Values stored in globals.h
-  switch (constantName) {
-    case 'H':
-      fileName     = "humidity.txt";
-      defaultValue = defaultHumidity; // Fraction
-      minimum      = minimumHumidity; // Fraction
-      maximum      = maximumHumidity; // Fraction
-      break;
-    case 'P':
-      fileName     = "pressure.txt";
-      defaultValue = defaultAtmosphericPressure; // Pascales
-      minimum      = minimumAtmosphericPressure; // Pascales
-      maximum      = maximumAtmosphericPressure; // Pascales
-      break;
-    default:
-      return -1;
-  } // End of switch
-
-
-  // !!! Remove when File I/O is implemented
-  value = defaultValue;
-
-  return value;
-
-} // End of getPressureFromSD
-
-
-
-void dataFileSetup(int frequency, double humidity, double pressure) {
-
-  // format          012345678901
-  // dataFileName = "QNTS_000.csv";
-
-
-  int fileCount;
-
-  for (fileCount =  999; fileCount > 0; fileCount--) {
-    sprintf(dataFileName, "QNTS_%03i.csv", fileCount);
-
-    if (SD.exists(dataFileName)) {
-      Serial.print("file: ");
-      Serial.println(dataFileName);
-      fileCount++;
-      sprintf(dataFileName, "QNTS_%03i.csv", fileCount);
-      Serial.print("new: ");
-      Serial.println(dataFileName);
-      break;
-    }
-
-  }
-
-  dataFile = SD.open(dataFileName, FILE_WRITE);
-
-  dataFile.println("QUANTUS,Distance-time measurements");
-  dataFile.println("Computed by,QUANTUS UNO");
-  dataFile.println("Version,0.0.7"); // !!! Implement proper versioning later
-  dataFile.print("Frequency (Hz),");
-  dataFile.println(frequency);
-  dataFile.print("Relative humidity (fraction),");
-  dataFile.println(humidity);
-  dataFile.print("Pressure (Pa),");
-  dataFile.println(pressure);
-  dataFile.println(",");
-  dataFile.println("time (s),distance (m)");
-
-  dataFile.close();
-
-  Serial.println("QUANTUS,Distance-time measurements");
-  Serial.println("Computed by,QUANTUS UNO");
-  Serial.println("Version,0.0.7"); // !!! Implement proper versioning later
-  Serial.print("Frequency (Hz),");
-  Serial.println(frequency);
-  Serial.print("Relative humidity (percent),");
-  Serial.println(humidity);
-  Serial.print("Pressure (Pa),");
-  Serial.println(pressure);
-  Serial.println(",");
-  Serial.println(",");
-  Serial.println("time (s),distance (m)");
-
-}
-
-
-// Accepts time in microseconds, distance in centimetres
-// Converts values to seconds and metres
-void writeDataToFile(double pointTime, double distance) {
-
-
+bool dataFileHeader() {
 
   dataFile = SD.open(dataFileName, FILE_WRITE);
 
   if (dataFile) {
-    dataFile.print(pointTime, 6);
-    dataFile.print(",");
-    dataFile.print(distance, 3);
-    dataFile.println();
+
+    dataFile.println(F("QUANTUS,Distance-time measurements"));
+
+    dataFile.print(F("Raw data export,"));
+    if (settings.rawData) dataFile.print(F("true"));
+    else dataFile.print(F("false"));
+    if (settings.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
+
+    dataFile.print(F("Count down (seconds),"));
+    dataFile.print(settings.countDown);
+    if (settings.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
+
+    dataFile.print(F("Frequency (Hz),"));
+    dataFile.print(settings.frequency);
+    if (settings.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
+
+    dataFile.print(F("Pressure (Pa),"));
+    dataFile.print(settings.pressure, 2);
+    if (settings.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
+
+    dataFile.print(F("Relative humidity (fraction),"));
+    dataFile.print(settings.humidity, 4);
+    if (settings.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
+
+    dataFile.print(F("Carbon dioxide mole fraction (fraction),"));
+    dataFile.print(settings.CO2MoleFraction, 6);
+    if (settings.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
+
+    dataFile.print(F("Temperature (C),"));
+    if (settings.autoTemperature) dataFile.print(F("auto"));
+    else dataFile.print(settings.temperature, 2);
+    if (settings.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
+
+
+    if (settings.rawData) dataFile.println(F(",,,,"));
+    else dataFile.println(F(","));
+
+    if (settings.rawData) dataFile.println(F("time (s),ping time (s),temperature (C),computed speed of sound (m/s),computed distance (m)"));
+    else dataFile.println(F("time (s),distance (m)"));
+
     dataFile.close();
 
-    Serial.print(pointTime, 6);
-    Serial.print(",");
-    Serial.print(distance, 3);
-    Serial.println();
   }
-  // if the file isn't open, pop up an error:
   else {
-    Serial.println("error opening datalog.txt");
-    while (1) {
-      redLED();
-      delay(1000);
-      offLED();
-      delay(1000);
-    }
+    return false;
   }
 
+  return true;
 }
+
+
+
+
+
+bool logData(measurement data) {
+
+  dataFile = SD.open(dataFileName, FILE_WRITE);
+  if (dataFile) {
+    if (settings.rawData) {
+      dataFile.print(data.time,         6);
+      dataFile.print(F(","));
+      dataFile.print(data.pingTime,     6);
+      dataFile.print(F(","));
+      dataFile.print(data.temperature,  2);
+      dataFile.print(F(","));
+      dataFile.print(data.speedOfSound, 3);
+      dataFile.print(F(","));
+      dataFile.print(data.distance,     6);
+      dataFile.println();
+      dataFile.close();
+    }
+    else {
+      dataFile.print(data.time,         9);
+      dataFile.print(F(","));
+      dataFile.print(data.distance,     6);
+      dataFile.println();
+      dataFile.close();
+    }
+
+    return true;
+
+  }
+  else {
+    return false;
+  }
+
+
+} // End of logData

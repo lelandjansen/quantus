@@ -1,21 +1,10 @@
 // QUANTUS
 // button.cpp
 
-// Attributions
-// Debounce code adapted from https://www.arduino.cc/en/Tutorial/Debounce
+#include "button.hpp"
 
-#include "button.h"
+void buttonPress() {
 
+  nextState();
 
-bool buttonPress() {
-
-  // !!! Implement debounce code later
-
-  if (digitalRead(BUTTON) == HIGH) {
-    return 0;
-  }
-  else {
-    return 1;
-  }
-
-}
+} // End of buttonPress
