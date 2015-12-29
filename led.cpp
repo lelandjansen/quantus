@@ -1,59 +1,228 @@
 // QUANTUS
 // led.cpp
 
-#include "led.h"
+#include "led.hpp"
+
+volatile uint8_t PULSE_COUNT;
 
 
-// Common anode RGB LED
-// Supply 5V to anode
-// Set red, green, and blue pins to LOW to turn on that color
-// Set pins to HIGH to turn off that color
 
-void redLED() {
-  digitalWrite(LED_RED,   LOW);
-  digitalWrite(LED_BLUE,  HIGH);
-  digitalWrite(LED_GREEN, HIGH);
-}
-
-void magentaLED() {
-  digitalWrite(LED_RED,   LOW);
-  digitalWrite(LED_BLUE,  LOW);
-  digitalWrite(LED_GREEN, HIGH);
-}
-
-void blueLED() {
-  digitalWrite(LED_RED,   HIGH);
-  digitalWrite(LED_BLUE,  LOW);
-  digitalWrite(LED_GREEN, HIGH);
-}
-
-void cyanLED() {
-  digitalWrite(LED_RED,   HIGH);
-  digitalWrite(LED_BLUE,  LOW);
-  digitalWrite(LED_GREEN, LOW);
-}
-
-void greenLED() {
-  digitalWrite(LED_RED,   HIGH);
-  digitalWrite(LED_BLUE,  HIGH);
-  digitalWrite(LED_GREEN, LOW);
-}
-
-void yellowLED() {
-  digitalWrite(LED_RED,   LOW);
-  digitalWrite(LED_BLUE,  HIGH);
-  digitalWrite(LED_GREEN, LOW);
-}
+// Turn RGB LED off
+void ledOff() {
+  analogWrite(LED_RED,   255);
+  analogWrite(LED_GREEN, 255);
+  analogWrite(LED_BLUE,  255);
+} // End of ledOff
 
 
-void whiteLED() {
-  digitalWrite(LED_RED,   LOW);
-  digitalWrite(LED_BLUE,  LOW);
-  digitalWrite(LED_GREEN, LOW);
-}
 
-void offLED() {
-  digitalWrite(LED_RED,   HIGH);
-  digitalWrite(LED_BLUE,  HIGH);
-  digitalWrite(LED_GREEN, HIGH);
-}
+// Make RGB LED solid white
+void ledWhite() {
+  analogWrite(LED_RED,     0);
+  analogWrite(LED_GREEN,   0);
+  analogWrite(LED_BLUE,    0);
+} // End of ledWhite
+
+
+// Make RGB LED solid red
+void ledRed() {
+  analogWrite(LED_RED,     0);
+  analogWrite(LED_GREEN, 255);
+  analogWrite(LED_BLUE,  255);
+} // End of ledGreen
+
+
+// Make RGB LED solid yellow
+void ledYellow() {
+  analogWrite(LED_RED,     0);
+  analogWrite(LED_GREEN,   0);
+  analogWrite(LED_BLUE,  255);
+} // End of ledYellow
+
+
+
+// Make RGB LED solid green
+void ledGreen() {
+  analogWrite(LED_RED,   255);
+  analogWrite(LED_GREEN,   0);
+  analogWrite(LED_BLUE,  255);
+} // End of ledGreen
+
+
+
+// Make RGB LED solid cyan
+void ledCyan() {
+  analogWrite(LED_RED,   255);
+  analogWrite(LED_GREEN,   0);
+  analogWrite(LED_BLUE,    0);
+} // End of ledCyan
+
+
+// Make RGB LED solid blue
+void ledBlue() {
+  analogWrite(LED_RED,   255);
+  analogWrite(LED_GREEN, 255);
+  analogWrite(LED_BLUE,    0);
+} // End of ledBlue
+
+
+// Make RGB LED solid magenta
+void ledMangenta() {
+  analogWrite(LED_RED,     0);
+  analogWrite(LED_GREEN, 255);
+  analogWrite(LED_BLUE,    0);
+} // End of ledMagenta
+
+
+
+
+uint8_t pulse() {
+
+  // Formula: f(x) = (exp(sin(x))-1/e)(255/(e-1/e))
+
+  // f(0) to f(63)
+  uint8_t pulseA[] = {  69,  71,  74,  77,  80,  83,  86,  89,  92,  95,  99,
+        102, 105, 109, 112, 116, 119, 123, 127, 130, 134, 138, 142, 146, 150,
+        153, 157, 161, 165, 169, 173, 177, 181, 184, 188, 192, 196, 199, 203,
+        206, 210, 213, 216, 220, 223, 226, 229, 231, 234, 236, 239, 241, 243,
+        245, 247, 248, 250, 251, 252, 253, 254, 254, 255, 255 };
+
+  // f(128) to f(191)
+  uint8_t pulseB[] = {  67,  65,  62,  60,  57,  55,  53,  50,  48,  46,  44,
+         42,  40,  38,  37,  35,  33,  32,  30,  28,  27,  26,  24,  23,  22,
+         20,  19,  18,  17,  16,  15,  14,  13,  12,  11,  10,  10,   9,   8,
+          8,   7,   6,   6,   5,   5,   4,   4,   3,   3,   3,   2,   2,   2,
+          1,   1,   1,   1,   0,   0,   0,   0,   0,   0,   0 };
+
+
+  // f(0) to f(63)
+  if (PULSE_COUNT >= 0 && PULSE_COUNT <= 63) {
+    return pulseA[PULSE_COUNT];
+  }
+  // f(64) to f(127)
+  else if (PULSE_COUNT >= 64 && PULSE_COUNT <= 127) {
+    return pulseA[64-(PULSE_COUNT-64)-1];
+  }
+  // f(128) to f(191)
+  else if (PULSE_COUNT >= 128 && PULSE_COUNT <= 191) {
+    return pulseB[PULSE_COUNT-128];
+  }
+  // f(192) to f(255)
+  else if (PULSE_COUNT >= 192 && PULSE_COUNT <= 255) {
+    return pulseB[192-(PULSE_COUNT-64)-1];
+  }
+
+} // End of pulse
+
+
+
+
+
+void led() {
+
+  // If button has been pressed
+  if (digitalRead(BUTTON) == LOW
+        && STATE != STATE_NO_SD
+        && STATE != STATE_SD_SETUP
+        && STATE != STATE_DATA_CONCLUDE
+        && STATE != STATE_ERROR) {
+
+    // White
+    ledWhite();
+
+  }
+
+  // If button has not been pressed
+  else {
+
+    switch (STATE) {
+      case STATE_NO_SD:
+        // Blinking red/white
+        if (pulse() > 128) {
+          // Red
+          analogWrite(LED_RED,     0);
+          analogWrite(LED_GREEN, 255);
+          analogWrite(LED_BLUE,  255);
+        }
+        else {
+          // White
+          analogWrite(LED_RED,     0);
+          analogWrite(LED_GREEN,   0);
+          analogWrite(LED_BLUE,    0);
+        }
+        break;
+
+      case STATE_SD_SETUP:
+        // Pulsing blue/magenta
+        analogWrite(LED_RED,   pulse()/2);
+        analogWrite(LED_GREEN, 255);
+        analogWrite(LED_BLUE,    0);
+        break;
+
+      case STATE_STANDBY:
+        // Pulsing blue/cyan
+        analogWrite(LED_RED,   255);
+        analogWrite(LED_GREEN, pulse());
+        analogWrite(LED_BLUE,    0);
+        break;
+
+      case STATE_DATA_SETUP:
+        // Blink green on white
+        if (pulse() >= 0 && pulse() < 6) {
+          // Solid green
+          analogWrite(LED_RED,   255);
+          analogWrite(LED_GREEN,   0);
+          analogWrite(LED_BLUE,  255);
+        }
+        else {
+          // Solid yellow
+          analogWrite(LED_RED,     0);
+          analogWrite(LED_GREEN,   0);
+          analogWrite(LED_BLUE,  255);
+        }
+        break;
+
+      case STATE_DATA_COLLECT:
+        // Solid green
+        analogWrite(LED_RED,   255);
+        analogWrite(LED_GREEN,   0);
+        analogWrite(LED_BLUE,  255);
+        break;
+
+      case STATE_DATA_CONCLUDE:
+        // Pulsing blue/magenta
+        analogWrite(LED_RED,   pulse()/2);
+        analogWrite(LED_GREEN, 255);
+        analogWrite(LED_BLUE,    0);
+        break;
+
+      case STATE_WARNING:
+        // Blinking red/yellow
+        if (pulse() > 128) {
+          // Red
+          analogWrite(LED_RED,     0);
+          analogWrite(LED_GREEN, 255);
+          analogWrite(LED_BLUE,  255);
+        }
+        else {
+          // Yellow
+          analogWrite(LED_RED,     0);
+          analogWrite(LED_GREEN,   0);
+          analogWrite(LED_BLUE,  255);
+        }
+        break;
+
+      case STATE_ERROR:
+        // Solid red
+        analogWrite(LED_RED,     0);
+        analogWrite(LED_GREEN, 255);
+        analogWrite(LED_BLUE,  255);
+        break;
+
+    } // End of switch
+
+  } // End of if
+
+  PULSE_COUNT = (PULSE_COUNT + 1)%256;
+
+} // End of led
