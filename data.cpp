@@ -26,7 +26,31 @@ measurement takeMeasurement() {
 
 
 
+
+
+// Take measurements
+// Fixed-point calculation
+measurement_fp takeMeasurement_fp() {
+
+  measurement_fp data_fp;
+
+  data_fp.time         = micros() - START_TIME_INT;
+  data_fp.pingTime     = measurePingTime_fp();
+  data_fp.temperature  = measureTemperature_fp();
+  data_fp.speedOfSound = computeSpeedOfSoundLinearApproximation_fp(data_fp.temperature);
+  data_fp.distance     = computeDistance_fp(data_fp.pingTime, data_fp.speedOfSound);
+
+  return data_fp;
+
+} // End of takeMeasurement
+
+
+
+
+// Setup code for data collection
 void dataSetup() {
+
+  double temperatureInitial, speedOfSoundInitial, d_speedOfSoundInitial;
 
   // Detach old timer interrupt
   Timer1.detachInterrupt();
@@ -54,15 +78,46 @@ void dataSetup() {
     return;
   }
 
-  PERIOD = 1e6 / (uint32_t)settings.frequency;
+  PERIOD = 1000000 / (uint32_t)SETTINGS.frequency;
+
+
+  // Compute initial temperature and speed of sound, and derivate values
+  // Convert to fixed-point
+
+  // Measure temperature once but do not use reading
+  measureTemperature();
+  delay(100);
+
+  temperatureInitial       = measureTemperature();
+  TEMPERATURE_INITIAL      = (uint32_t)(temperatureInitial * 1e6);
+
+  speedOfSoundInitial      = computeSpeedOfSound(temperatureInitial);
+  SPEED_OF_SOUND_INITIAL   = (uint32_t)(speedOfSoundInitial * 1e6);
+
+  d_speedOfSoundInitial    = computeSpeedOfSoundDerivative(temperatureInitial);
+  D_SPEED_OF_SOUND_INITIAL = (uint32_t)(d_speedOfSoundInitial * 1e4);
+
+  // Serial.print(F("temperatureInitial       "));
+  // Serial.println(temperatureInitial, 6);
+  // Serial.print(F("TEMPERATURE_INITIAL      "));
+  // Serial.println(TEMPERATURE_INITIAL);
+  // Serial.print(F("speedOfSoundInitial      "));
+  // Serial.println(speedOfSoundInitial, 6);
+  // Serial.print(F("SPEED_OF_SOUND_INITIAL   "));
+  // Serial.println(SPEED_OF_SOUND_INITIAL);
+  // Serial.print(F("d_speedOfSoundInitial    "));
+  // Serial.println(d_speedOfSoundInitial, 6);
+  // Serial.print(F("D_SPEED_OF_SOUND_INITIAL "));
+  // Serial.println(D_SPEED_OF_SOUND_INITIAL);
+  // Serial.println();
 
   // Blink countdown
-  for (int i = 0; i <= settings.countDown; i++) {
+  for (int i = 0; i <= SETTINGS.countDown; i++) {
     ledYellow();
-    if (i == 0) delay(300);
+    if (i == 0) delay(250);
     else delay (850);
     ledGreen();
-    if (i != settings.countDown) delay(150);
+    if (i != SETTINGS.countDown) delay(150);
   }
 
   // Set START_TIME to current time
@@ -76,6 +131,7 @@ void dataSetup() {
 
 
 
+// Collect data
 void dataCollect() {
 
   if (micros() - LAST_DATA_COLLECT >= PERIOD) {
@@ -83,10 +139,7 @@ void dataCollect() {
 
     ledWhite();
 
-
     LAST_DATA_COLLECT = micros();
-
-
 
     // Take measurement
     measurement data = takeMeasurement();
@@ -116,7 +169,49 @@ void dataCollect() {
 
 
 
+// Collect data
+// Fixed-point calculations
+void dataCollect_fp() {
 
+  if (micros() - LAST_DATA_COLLECT >= PERIOD) {
+
+    ledWhite();
+
+
+    LAST_DATA_COLLECT = micros();
+
+
+    // Take measurement
+    measurement_fp data_fp = takeMeasurement_fp();
+
+    // Log measurement to sd card
+    if (!logData_fp(data_fp)) {
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // ERROR: Cannot write file to SD card
+      Serial.println(F("Error logging data"));
+      NEXT_STATE = STATE_ERROR;
+      return;
+    }
+
+    DATA_COUNT++;
+    if (DATA_COUNT >= 1000) {
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // WARNING: Cannot collect more than 1000 data points
+      NEXT_STATE = STATE_WARNING;
+      return;
+    }
+
+    ledGreen();
+
+  }
+
+} // End of dataCollect_fp
+
+
+
+
+
+// Finish data collection
 void dataConclude() {
 
   // closeDataFile();
@@ -128,6 +223,5 @@ void dataConclude() {
   nextDataFileName();
 
   NEXT_STATE = STATE_STANDBY;
-
 
 } // End of dataConclude

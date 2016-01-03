@@ -19,8 +19,10 @@ extern double START_TIME;
 
 
 measurement takeMeasurement();
+measurement_fp takeMeasurement_fp();
 void dataSetup();
 void dataCollect();
+void dataCollect_fp();
 void dataConclude();
 
 

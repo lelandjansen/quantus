@@ -67,7 +67,7 @@ void ledBlue() {
 
 
 // Make RGB LED solid magenta
-void ledMangenta() {
+void ledMagenta() {
   analogWrite(LED_RED,     0);
   analogWrite(LED_GREEN, 255);
   analogWrite(LED_BLUE,    0);
@@ -81,35 +81,20 @@ uint8_t pulse() {
   // Formula: f(x) = (exp(sin(x))-1/e)(255/(e-1/e))
 
   // f(0) to f(63)
-  uint8_t pulseA[] = {  69,  71,  74,  77,  80,  83,  86,  89,  92,  95,  99,
-        102, 105, 109, 112, 116, 119, 123, 127, 130, 134, 138, 142, 146, 150,
-        153, 157, 161, 165, 169, 173, 177, 181, 184, 188, 192, 196, 199, 203,
-        206, 210, 213, 216, 220, 223, 226, 229, 231, 234, 236, 239, 241, 243,
-        245, 247, 248, 250, 251, 252, 253, 254, 254, 255, 255 };
-
-  // f(128) to f(191)
-  uint8_t pulseB[] = {  67,  65,  62,  60,  57,  55,  53,  50,  48,  46,  44,
-         42,  40,  38,  37,  35,  33,  32,  30,  28,  27,  26,  24,  23,  22,
-         20,  19,  18,  17,  16,  15,  14,  13,  12,  11,  10,  10,   9,   8,
-          8,   7,   6,   6,   5,   5,   4,   4,   3,   3,   3,   2,   2,   2,
-          1,   1,   1,   1,   0,   0,   0,   0,   0,   0,   0 };
-
-
-  // f(0) to f(63)
   if (PULSE_COUNT >= 0 && PULSE_COUNT <= 63) {
-    return pulseA[PULSE_COUNT];
+    return PULSE_A[PULSE_COUNT];
   }
   // f(64) to f(127)
   else if (PULSE_COUNT >= 64 && PULSE_COUNT <= 127) {
-    return pulseA[64-(PULSE_COUNT-64)-1];
+    return PULSE_A[64-(PULSE_COUNT-64)-1];
   }
   // f(128) to f(191)
   else if (PULSE_COUNT >= 128 && PULSE_COUNT <= 191) {
-    return pulseB[PULSE_COUNT-128];
+    return PULSE_B[PULSE_COUNT-128];
   }
   // f(192) to f(255)
   else if (PULSE_COUNT >= 192 && PULSE_COUNT <= 255) {
-    return pulseB[192-(PULSE_COUNT-64)-1];
+    return PULSE_B[192-(PULSE_COUNT-64)-1];
   }
 
 } // End of pulse
@@ -121,7 +106,7 @@ uint8_t pulse() {
 void led() {
 
   // If button has been pressed
-  if (digitalRead(BUTTON) == LOW
+  if (digitalRead(HIGH) == LOW
         && STATE != STATE_NO_SD
         && STATE != STATE_SD_SETUP
         && STATE != STATE_DATA_CONCLUDE
@@ -138,7 +123,14 @@ void led() {
     switch (STATE) {
       case STATE_NO_SD:
         // Blinking red/white
-        if (pulse() > 128) {
+
+        //   0- 63  red
+        //  64-127  white
+        // 128-191  red
+        // 192-255  white
+
+        if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
+         || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
           // Red
           analogWrite(LED_RED,     0);
           analogWrite(LED_GREEN, 255);
@@ -198,7 +190,8 @@ void led() {
 
       case STATE_WARNING:
         // Blinking red/yellow
-        if (pulse() > 128) {
+        if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
+         || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
           // Red
           analogWrite(LED_RED,     0);
           analogWrite(LED_GREEN, 255);
@@ -213,11 +206,27 @@ void led() {
         break;
 
       case STATE_ERROR:
-        // Solid red
+
+      // Blinking red/yellow
+      if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
+       || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
+        // Red
         analogWrite(LED_RED,     0);
         analogWrite(LED_GREEN, 255);
         analogWrite(LED_BLUE,  255);
-        break;
+      }
+      else {
+        // Yellow
+        analogWrite(LED_RED,     0);
+        analogWrite(LED_GREEN,   0);
+        analogWrite(LED_BLUE,  255);
+      }
+
+        // // Solid red
+        // analogWrite(LED_RED,     0);
+        // analogWrite(LED_GREEN, 255);
+        // analogWrite(LED_BLUE,  255);
+        // break;
 
     } // End of switch
 

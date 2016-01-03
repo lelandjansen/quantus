@@ -31,7 +31,8 @@ void state() {
 
     case STATE_DATA_COLLECT:
       STATE = STATE_DATA_COLLECT;
-      dataCollect();
+      // dataCollect();
+      dataCollect_fp();
       break;
 
     case STATE_DATA_CONCLUDE:

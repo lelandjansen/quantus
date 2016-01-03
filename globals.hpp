@@ -10,22 +10,22 @@
 // Unused                     0
 // Unused                     1
 #define BUTTON                2
-// SD_CD                      3
-#define CHIP_SELECT           4
+// SD_CD                      3 // (CD)
+#define CHIP_SELECT           4 // (CS)                                     - INPUT
 #define LED_RED               5 // Use 150-ohm resistor
 #define LED_GREEN             6 // Use 100-ohm resistor (calculated 90 Ohms)
 #define ULTRASONIC_TRIGGER    7
 #define ULTRASONIC_ECHO       8
 #define LED_BLUE              9 // Use 100-ohm resistor (calculated 90 Ohms)
-// SD_RESERVED               10 // Must remain unsued
-// MOSI                      11 // Must remain unsued
-// MISO                      12 // Must remain unsued
-// CLK                       13 // Must remain unsued
+// SD_RESERVED               10 // ()    Must remain unused
+// MOSI                      11 // (DI)  Must remain unused                 - INPUT
+// MISO                      12 // (DO)  Must remain unused                 - ???INPUT??? (0.17V)
+// CLK                       13 // (SCK) Must remain unused
 
 
 
 // Arduino analog pins
-#define TEMPERATURE           0
+#define TEMPERATURE_PIN       0
 // Unused                     1
 // Unused                     2
 // Unused                     3
@@ -64,7 +64,7 @@ typedef struct {
   double  temperature;     // temperature (degrees Celsius)
 } systemSettings;
 
-// Measureent struct
+// Measurement struct
 typedef struct {
   double time;
   double pingTime;
@@ -73,9 +73,20 @@ typedef struct {
   double distance;
 } measurement;
 
+// Measurement struct
+// For use with fixed-point calculations
+// Scale factor: 10^6
+typedef struct {
+  uint32_t time;
+  uint32_t pingTime;
+  uint32_t temperature;
+  uint32_t speedOfSound;
+  uint32_t distance;
+} measurement_fp;
 
 
-extern systemSettings settings;
+
+extern systemSettings SETTINGS;
 
 // Default parameters
 const systemSettings defaultSettings =  {

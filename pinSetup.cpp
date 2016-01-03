@@ -11,7 +11,7 @@ void pinSetup() {
 
   // Button (interrupt)
   pinMode(BUTTON, INPUT);
-  attachInterrupt(digitalPinToInterrupt(BUTTON), buttonPress,  FALLING);
+  attachInterrupt(digitalPinToInterrupt(BUTTON), buttonPress,  RISING);
 
   // RGB LED
   pinMode(LED_RED,    OUTPUT);
@@ -29,6 +29,12 @@ void pinSetup() {
   // Ultrasonic sensor
   pinMode(ULTRASONIC_TRIGGER, OUTPUT);
   pinMode(ULTRASONIC_ECHO,    INPUT);
+
+
+
+  // Temperature sensor
+  // TMP36 temperature sensor using 3.3 V (not 5 V)
+  analogReference(EXTERNAL);
 
 
 } // End of pinSetup

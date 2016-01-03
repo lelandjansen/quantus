@@ -13,7 +13,7 @@ void setup() {
   pinSetup();
 
   // Timer interrupt
-  // Run the function once every *** seconds
+  // Run the function ten times per second
   Timer1.initialize(10000);
   Timer1.attachInterrupt(led); // attach the service routine here
   PULSE_COUNT = 0;
