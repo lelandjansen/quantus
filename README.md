@@ -1,4 +1,4 @@
-# quantus
+# Quantus
 ### Work in Progress
 
 ![quantus logo](quantus_logo.jpg)

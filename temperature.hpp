@@ -6,6 +6,7 @@
 
 #include "globals.hpp"
 
-double measureTemperature();
+double   measureTemperature();
+uint32_t measureTemperature_fp();
 
 #endif

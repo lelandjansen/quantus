@@ -6,6 +6,7 @@
 
 #include "globals.hpp"
 
-double measurePingTime();
+double   measurePingTime();
+uint32_t measurePingTime_fp();
 
 #endif

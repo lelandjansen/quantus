@@ -97,10 +97,10 @@ bool getSettingsFromFile() {
       // read file to array
       // convert
       // DELETE
-      settings.autoTemperature = true;
-      settings.temperature     = 20;
-      if (settings.temperature < minimumSettings.temperature
-       || settings.temperature > maximumSettings.temperature) {
+      SETTINGS.autoTemperature = true;
+      SETTINGS.temperature     = 20;
+      if (SETTINGS.temperature < minimumSettings.temperature
+       || SETTINGS.temperature > maximumSettings.temperature) {
           // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           // Warning: temperature values out of range
           NEXT_STATE = STATE_WARNING;
@@ -125,7 +125,7 @@ bool getSettingsFromFile() {
   */
 
   // DELETE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  settings = defaultSettings;
+  SETTINGS = defaultSettings;
 
   return true;
 
@@ -231,50 +231,52 @@ bool dataFileHeader() {
 
   if (dataFile) {
 
-    dataFile.println(F("QUANTUS,Distance-time measurements"));
+    dataFile.print(F("QUANTUS,Distance-time measurements"));
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
+    else dataFile.println();
 
     dataFile.print(F("Raw data export,"));
-    if (settings.rawData) dataFile.print(F("true"));
+    if (SETTINGS.rawData) dataFile.print(F("true"));
     else dataFile.print(F("false"));
-    if (settings.rawData) dataFile.println(F(",,,"));
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
     dataFile.print(F("Count down (seconds),"));
-    dataFile.print(settings.countDown);
-    if (settings.rawData) dataFile.println(F(",,,"));
+    dataFile.print(SETTINGS.countDown);
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
     dataFile.print(F("Frequency (Hz),"));
-    dataFile.print(settings.frequency);
-    if (settings.rawData) dataFile.println(F(",,,"));
+    dataFile.print(SETTINGS.frequency);
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
     dataFile.print(F("Pressure (Pa),"));
-    dataFile.print(settings.pressure, 2);
-    if (settings.rawData) dataFile.println(F(",,,"));
+    dataFile.print(SETTINGS.pressure, 2);
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
     dataFile.print(F("Relative humidity (fraction),"));
-    dataFile.print(settings.humidity, 4);
-    if (settings.rawData) dataFile.println(F(",,,"));
+    dataFile.print(SETTINGS.humidity, 4);
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
     dataFile.print(F("Carbon dioxide mole fraction (fraction),"));
-    dataFile.print(settings.CO2MoleFraction, 6);
-    if (settings.rawData) dataFile.println(F(",,,"));
+    dataFile.print(SETTINGS.CO2MoleFraction, 6);
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
     dataFile.print(F("Temperature (C),"));
-    if (settings.autoTemperature) dataFile.print(F("auto"));
-    else dataFile.print(settings.temperature, 2);
-    if (settings.rawData) dataFile.println(F(",,,"));
+    if (SETTINGS.autoTemperature) dataFile.print(F("auto"));
+    else dataFile.print(SETTINGS.temperature, 2);
+    if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
 
-    if (settings.rawData) dataFile.println(F(",,,,"));
+    if (SETTINGS.rawData) dataFile.println(F(",,,,"));
     else dataFile.println(F(","));
 
-    if (settings.rawData) dataFile.println(F("time (s),ping time (s),temperature (C),computed speed of sound (m/s),computed distance (m)"));
+    if (SETTINGS.rawData) dataFile.println(F("time (s),ping time (s),temperature (C),computed speed of sound (m/s),computed distance (m)"));
     else dataFile.println(F("time (s),distance (m)"));
 
     dataFile.close();
@@ -295,7 +297,7 @@ bool logData(measurement data) {
 
   dataFile = SD.open(dataFileName, FILE_WRITE);
   if (dataFile) {
-    if (settings.rawData) {
+    if (SETTINGS.rawData) {
       dataFile.print(data.time,         6);
       dataFile.print(F(","));
       dataFile.print(data.pingTime,     6);
@@ -313,6 +315,45 @@ bool logData(measurement data) {
       dataFile.print(F(","));
       dataFile.print(data.distance,     6);
       dataFile.println();
+      dataFile.close();
+    }
+
+    return true;
+
+  }
+  else {
+    return false;
+  }
+
+
+} // End of logData
+
+
+
+
+
+bool logData_fp(measurement_fp data_fp) {
+
+  dataFile = SD.open(dataFileName, FILE_WRITE);
+  if (dataFile) {
+    if (SETTINGS.rawData) {
+      dataFile.print(data_fp.time);
+      dataFile.print(F("e-6,"));
+      dataFile.print(data_fp.pingTime);
+      dataFile.print(F("e-6,"));
+      dataFile.print(data_fp.temperature);
+      dataFile.print(F("e-6,"));
+      dataFile.print(data_fp.speedOfSound);
+      dataFile.print(F("e-6,"));
+      dataFile.print(data_fp.distance);
+      dataFile.println(F("e-9"));
+      dataFile.close();
+    }
+    else {
+      dataFile.print(data_fp.time);
+      dataFile.print(F("e-6,"));
+      dataFile.print(data_fp.distance);
+      dataFile.println(F("e-9"));
       dataFile.close();
     }
 
