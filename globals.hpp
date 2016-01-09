@@ -92,7 +92,7 @@ extern systemSettings SETTINGS;
 const systemSettings defaultSettings =  {
     true,     // rawData
     3,        // countDown
-    10,       // frequency
+    20,       // frequency
     101325,   // pressure
     0.66,     // humidity
     3.14e-4,  // CO2MoleFraction

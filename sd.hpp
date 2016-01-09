@@ -5,7 +5,7 @@
 #define __SD_HPP__
 
 #include <SPI.h>
-#include <SD.h>
+#include <SdFat.h>
 #include <stdlib.h>
 #include "globals.hpp"
 
