@@ -134,7 +134,7 @@ void dataSetup() {
 // Collect data
 void dataCollect() {
 
-  if (micros() - LAST_DATA_COLLECT >= PERIOD) {
+  if (micros() - LAST_DATA_COLLECT - 44e-6 >= PERIOD) {
 
 
     ledWhite();
@@ -173,7 +173,8 @@ void dataCollect() {
 // Fixed-point calculations
 void dataCollect_fp() {
 
-  if (micros() - LAST_DATA_COLLECT >= PERIOD) {
+  // Measurement tends to take an extra 44 microseconds (hence -44)
+  if (micros() - LAST_DATA_COLLECT >= PERIOD - 44) {
 
     ledWhite();
 

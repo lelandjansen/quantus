@@ -2,7 +2,7 @@
 // sd.cpp
 
 #include "sd.hpp"
-
+SdFat SD;
 
 // DELETE
 #include <Arduino.h>
