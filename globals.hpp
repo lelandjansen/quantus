@@ -56,7 +56,7 @@ extern volatile uint8_t NEXT_STATE;
 // Settings struct
 typedef struct {
   bool    rawData;         // Set whether raw data should be included
-  uint8_t countDown;       // Countdown to data collection (seconds)
+  uint8_t countdown;       // Countdown to data collection (seconds)
   uint8_t frequency;       // Data collection frequency (Hertz)
   double  pressure;        // Atmospheric pressure (Pascales)
   double  humidity;        // Relative humidity (fraction)
@@ -92,8 +92,8 @@ extern systemSettings SETTINGS;
 // Default parameters
 const systemSettings defaultSettings =  {
     true,     // rawData
-    10,       // countDown
-    1,        // frequency
+    3,        // countDown
+    20,       // frequency
     101325,   // pressure
     0.66,     // humidity
     3.14e-4,  // CO2MoleFraction

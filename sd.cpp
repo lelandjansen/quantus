@@ -5,11 +5,12 @@
 SdFat SD;
 
 
-int dataFileNumber;
+int DATA_FILE_NUMBER;
 File dataFile;
 File settingsFile;
 File errorFile;
 char dataFileName[13];
+bool errorEncountered = false;
 
 
 
@@ -41,16 +42,6 @@ void sdChange() {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   delay(100);
 } // End of SDInserted
-
-
-
-
-// State while no SD card is inserted
-void noSDSetup() {
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // NO SD CODE
-} // End of noSD
-
 
 
 
@@ -102,9 +93,11 @@ bool errorLogSetup() {
   }
   errorFile = SD.open("ERRORLOG.txt", FILE_WRITE);
   if (errorFile) {
-    errorFile.println();
-    errorFile.println(F("__________________________________________________"));
-    errorFile.close();
+    if (errorEncountered) {
+      errorFile.println();
+      errorFile.println(F("__________________________________________________"));
+      errorFile.close();
+    }
   }
   else {
     return false;
@@ -173,23 +166,30 @@ bool getSettingsFromFile() {
 
 
 void nextDataFileName() {
-  dataFileNumber++;
-  sprintf(dataFileName, "QNTS_%03i.csv", dataFileNumber);
+  DATA_FILE_NUMBER++;
+  sprintf(dataFileName, "QNTS_%03i.csv", DATA_FILE_NUMBER);
+} // End of nextDataFileName
+
+void previousDataFileName() {
+  DATA_FILE_NUMBER--;
+  sprintf(dataFileName, "QNTS_%03i.csv", DATA_FILE_NUMBER);
 } // End of nextDataFileName
 
 
 
 
-
 void determineDataFileNumber() {
+
   // Determine the number of the next data file
-  for (dataFileNumber = 999; dataFileNumber >= 0; dataFileNumber--) {
-    sprintf(dataFileName, "QNTS_%03i.csv", dataFileNumber);
-    if (SD.exists(dataFileName) || dataFileNumber == 0) {
+  for (DATA_FILE_NUMBER = 999; DATA_FILE_NUMBER >= 0; DATA_FILE_NUMBER--) {
+    if (NEXT_STATE == STATE_NO_SD) break;
+    sprintf(dataFileName, "QNTS_%03i.csv", DATA_FILE_NUMBER);
+    if (SD.exists(dataFileName) || DATA_FILE_NUMBER == 0) {
       nextDataFileName();
       break;
     }
   }
+
 } // End of determineDataFileNumber
 
 
@@ -219,6 +219,7 @@ void sdSetup() {
   if (!errorLogSetup()) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // ERROR CODE
+    Serial.println(F("Error: Could not create error log."));
     NEXT_STATE = STATE_NO_SD;
     return;
   }
@@ -228,6 +229,7 @@ void sdSetup() {
   if (!getSettingsFromFile()) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // ERROR CODE
+    Serial.println(F("Error: Could not get settings from file."));
     NEXT_STATE = STATE_NO_SD;
     return;
   }
@@ -238,28 +240,25 @@ void sdSetup() {
 
   // If data file number is between 990 and 999
   // Warn that 10 or less data files can be created
-  if (dataFileNumber > 989 && dataFileNumber < 1000) {
+  if (DATA_FILE_NUMBER > 989 && DATA_FILE_NUMBER < 1000) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // WARNING: 10 or less data files can be created
+    Serial.println(F("Warning: 10 or less data files remain"));
     NEXT_STATE = STATE_WARNING;
   }
   // If data file number is 1000
   // No more data files can be created
-  else if (dataFileNumber == 1000) {
+  else if (DATA_FILE_NUMBER >= 1000) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // ERROR: No more data files can be created
+    Serial.println(F("Error: No more data files can be created."));
     NEXT_STATE = STATE_ERROR;
     return;
   }
 
-  if (sdInserted()) {
-    if (NEXT_STATE != STATE_WARNING) {
-      // Go to standby state
-      NEXT_STATE = STATE_STANDBY;
-    }
-  }
-  else {
-    NEXT_STATE = STATE_ERROR;
+  if (NEXT_STATE != STATE_WARNING && NEXT_STATE != STATE_NO_SD) {
+    // Go to standby state
+    NEXT_STATE = STATE_STANDBY;
   }
 
 
@@ -285,7 +284,7 @@ bool dataFileHeader() {
     else dataFile.println();
 
     dataFile.print(F("Count down (seconds),"));
-    dataFile.print(SETTINGS.countDown);
+    dataFile.print(SETTINGS.countdown);
     if (SETTINGS.rawData) dataFile.println(F(",,,"));
     else dataFile.println();
 
@@ -409,3 +408,17 @@ bool logData_fp(measurement_fp data_fp) {
 
 
 } // End of logData
+
+
+
+
+// Remove current data file
+bool removeCurrentDataFile() {
+  if (SD.remove(dataFileName)) {
+    previousDataFileName();
+    return true;
+  }
+  else {
+    return false;
+  }
+}

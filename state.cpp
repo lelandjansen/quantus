@@ -14,7 +14,6 @@ void state() {
 
     case STATE_NO_SD:
       STATE = STATE_NO_SD;
-      Serial.println(F("N"));
       noSD();
       break;
 
@@ -35,8 +34,6 @@ void state() {
 
     case STATE_DATA_COLLECT:
       STATE = STATE_DATA_COLLECT;
-      // dataCollect();
-      Serial.println(F("D"));
       dataCollect_fp();
       break;
 
@@ -51,7 +48,6 @@ void state() {
       break;
 
     case STATE_ERROR:
-    Serial.println(F("E"));
       STATE = STATE_ERROR;
       noSD();
       break;
