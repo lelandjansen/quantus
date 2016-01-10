@@ -117,45 +117,57 @@ bool getSettingsFromFile() {
     SD.mkdir("SETTINGS");
   }
 
-  /*
-
-  // Temperature
-  if (SD.exists("SETTINGS/TEMP.txt")) {
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    settingsFile = SD.open("SETTINGS/TEMP.txt", FILE_READ);
-    if (settingsFile) {
-      // read file to array
-      // convert
-      // DELETE
-      SETTINGS.autoTemperature = true;
-      SETTINGS.temperature     = 20;
-      if (SETTINGS.temperature < minimumSettings.temperature
-       || SETTINGS.temperature > maximumSettings.temperature) {
-          // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-          // Warning: temperature values out of range
-          NEXT_STATE = STATE_WARNING;
-      }
-      settingsFile.close();
-    }
-    else {
-      return false;
-    }
-  }
-  else {
-    settingsFile = SD.open("SETTINGS/TEMP.txt", FILE_WRITE);
-    if (settingsFile) {
-      settingsFile.print("auto");
-      settingsFile.close();
-    }
-    else {
-      return false;
-    }
-  }
-
-  */
-
   // DELETE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   SETTINGS = defaultSettings;
+
+  int bufferSize = 20 + 1;
+  char stringBuffer[bufferSize];
+
+  // rawData
+  if (SD.exists("SETTINGS/rawData.txt")) {
+
+    settingsFile = SD.open("SETTINGS/rawData.txt", FILE_READ);
+    if (settingsFile) {
+      // Read file contents to buffer
+      int i = 0;
+      while (settingsFile.available()) {
+        if (i == bufferSize) break;
+        stringBuffer[i] = settingsFile.read();
+        i++;
+      }
+    }
+
+    // Check if string
+    if (strncmp(stringBuffer, "true", 4) == 0) {
+      Serial.println(F("rawData = true"));
+      SETTINGS.rawData = true;
+    }
+    else if (strncmp(stringBuffer, "false", 5) == 0) {
+      Serial.println(F("rawData = false"));
+      SETTINGS.rawData = false;
+    }
+    else {
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      Serial.println(F("Warning: rawData.txt file does not contain correct value. Setting to default value (false). Original file not modified."));
+      SETTINGS.rawData = false;
+    }
+  }
+  // If the file does not exist
+  else {
+    settingsFile = SD.open("SETTINGS/rawData.txt", FILE_WRITE);
+    if (settingsFile) {
+      settingsFile.print(F("false"));
+      Serial.println(F("Did not find rawData.txt. Created file and set value to false."));
+      settingsFile.close();
+      SETTINGS.rawData = false;
+    }
+    else {
+      return false;
+    }
+  }
+
+  Serial.print("Raw data: ");
+  Serial.println(SETTINGS.rawData);
 
   return true;
 
