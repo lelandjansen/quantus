@@ -111,8 +111,31 @@ void dataSetup() {
   // Serial.println(D_SPEED_OF_SOUND_INITIAL);
   // Serial.println();
 
+
+  // Blink countdown
+  uint32_t countDownStart;
+  countDownStart = millis();
+  while (sdInserted() && millis() - countDownStart < 250) {
+    ledYellow();
+  }
+  countDownStart = millis();
+  ledGreen();
+  while (sdInserted() && millis() - countDownStart < 1000 * SETTINGS.countDown) {
+    if ((millis() - countDownStart)%1000 > 149) {
+      ledYellow();
+    }
+    else { //if ((millis() - countDownStart)%150 == 0) {
+      ledGreen();
+    }
+  }
+
+  while(1) {
+    ledBlue();
+  }
+
   // Blink countdown
   for (int i = 0; i <= SETTINGS.countDown; i++) {
+    if (!sdInserted()) break;
     ledYellow();
     if (i == 0) delay(250);
     else delay (850);
@@ -173,17 +196,27 @@ void dataCollect() {
 // Fixed-point calculations
 void dataCollect_fp() {
 
+  Serial.println(F("0"));
+
   // Measurement tends to take an extra 44 microseconds (hence -44)
   if (micros() - LAST_DATA_COLLECT >= PERIOD - 44) {
 
+    Serial.println(F("1"));
+
     ledWhite();
+
+    Serial.println(F("2"));
 
 
     LAST_DATA_COLLECT = micros();
 
+    Serial.println(F("3"));
+
 
     // Take measurement
     measurement_fp data_fp = takeMeasurement_fp();
+
+    Serial.println(F("4"));
 
     // Log measurement to sd card
     if (!logData_fp(data_fp)) {
@@ -194,6 +227,9 @@ void dataCollect_fp() {
       return;
     }
 
+
+    Serial.println(F("5"));
+
     DATA_COUNT++;
     if (DATA_COUNT >= 1000) {
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -202,7 +238,13 @@ void dataCollect_fp() {
       return;
     }
 
+
+    Serial.println(F("6"));
+
     ledGreen();
+
+
+    Serial.println(F("7"));
 
   }
 

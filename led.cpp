@@ -129,19 +129,26 @@ void led() {
         // 128-191  red
         // 192-255  white
 
-        if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
-         || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
-          // Red
-          analogWrite(LED_RED,     0);
-          analogWrite(LED_GREEN, 255);
-          analogWrite(LED_BLUE,  255);
-        }
-        else {
-          // White
-          analogWrite(LED_RED,     0);
-          analogWrite(LED_GREEN,   0);
-          analogWrite(LED_BLUE,    0);
-        }
+        // Pulsing red/yellow
+        // Pulsing blue/magenta
+        analogWrite(LED_RED,   0);
+        analogWrite(LED_GREEN, 255-pulse()/4);
+        analogWrite(LED_BLUE,  255);
+        break;
+
+        // if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
+        //  || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
+        //   // Red
+        //   analogWrite(LED_RED,     0);
+        //   analogWrite(LED_GREEN, 255);
+        //   analogWrite(LED_BLUE,  255);
+        // }
+        // else {
+        //   // White
+        //   analogWrite(LED_RED,     0);
+        //   analogWrite(LED_GREEN,   0);
+        //   analogWrite(LED_BLUE,    0);
+        // }
         break;
 
       case STATE_SD_SETUP:
