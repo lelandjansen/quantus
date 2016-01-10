@@ -18,13 +18,14 @@ void setup() {
   Timer1.attachInterrupt(led); // attach the service routine here
   PULSE_COUNT = 0;
 
-  STATE      = STATE_SD_SETUP;
-  NEXT_STATE = STATE_SD_SETUP;
+  sdChange();
 
 } // End of setup
 
 
 void loop() {
+
+  // Serial.println(F("-3"));
 
   state();
 

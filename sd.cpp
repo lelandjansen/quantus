@@ -4,15 +4,52 @@
 #include "sd.hpp"
 SdFat SD;
 
-// DELETE
-#include <Arduino.h>
-
 
 int dataFileNumber;
 File dataFile;
 File settingsFile;
 File errorFile;
 char dataFileName[13];
+
+
+
+bool sdInserted() {
+  if (digitalRead(CARD_DETECT) == HIGH) {
+    return true;
+  }
+  else if (digitalRead(CARD_DETECT) == LOW) {
+    return false;
+  }
+}
+
+
+void sdChange() {
+  if (sdInserted()) {
+    // SD Card is inserted
+    Serial.println(F("Inserted"));
+    NEXT_STATE = STATE_SD_SETUP;
+  }
+  else {
+    // SD Card is removed
+
+    // Attach new timer interrupt (change led colour)
+    Timer1.attachInterrupt(led, 10000);
+
+    NEXT_STATE = STATE_NO_SD;
+    Serial.println(F("Removed"));
+  }
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  delay(100);
+} // End of SDInserted
+
+
+
+
+// State while no SD card is inserted
+void noSDSetup() {
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // NO SD CODE
+} // End of noSD
 
 
 
@@ -215,10 +252,16 @@ void sdSetup() {
     return;
   }
 
-
-  if (NEXT_STATE != STATE_WARNING) {
-    NEXT_STATE = STATE_STANDBY;
+  if (sdInserted()) {
+    if (NEXT_STATE != STATE_WARNING) {
+      // Go to standby state
+      NEXT_STATE = STATE_STANDBY;
+    }
   }
+  else {
+    NEXT_STATE = STATE_ERROR;
+  }
+
 
 } // End of sdSetup
 

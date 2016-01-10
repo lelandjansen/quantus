@@ -6,6 +6,7 @@
 
 #include "globals.hpp"
 #include "button.hpp"
+#include "sd.hpp"
 
 void pinSetup();
 

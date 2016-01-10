@@ -8,6 +8,7 @@
 #include <SdFat.h>
 #include <stdlib.h>
 #include "globals.hpp"
+#include "led.hpp"
 
 extern int dataFileNumber;
 extern File dataFile;
@@ -15,6 +16,8 @@ extern File errorFile;
 extern char dataFileName[13];
 
 
+bool sdInserted();
+void sdChange();
 void noSD();
 // bool openDataFile();
 // void closeDataFile();

@@ -5,22 +5,23 @@
 #define __GLOBALS_HPP__
 
 #include <Arduino.h>
+#include <TimerOne.h>
 
 // Arduino digital pins
 // Unused                     0
 // Unused                     1
 #define BUTTON                2
-// SD_CD                      3 // (CD)
-#define CHIP_SELECT           4 // (CS)                                     - INPUT
+#define CARD_DETECT           3 // (CD)
+#define CHIP_SELECT           4 // (CS)
 #define LED_RED               5 // Use 150-ohm resistor
 #define LED_GREEN             6 // Use 100-ohm resistor (calculated 90 Ohms)
 #define ULTRASONIC_TRIGGER    7
 #define ULTRASONIC_ECHO       8
 #define LED_BLUE              9 // Use 100-ohm resistor (calculated 90 Ohms)
-// SD_RESERVED               10 // ()    Must remain unused
-// MOSI                      11 // (DI)  Must remain unused                 - INPUT
-// MISO                      12 // (DO)  Must remain unused                 - ???INPUT??? (0.17V)
-// CLK                       13 // (SCK) Must remain unused
+//      SD_RESERVED          10 // ()    Must remain unused
+//      MOSI                 11 // (DI)
+//      MISO                 12 // (DO)
+//      CLK                  13 // (SCK)
 
 
 
@@ -91,8 +92,8 @@ extern systemSettings SETTINGS;
 // Default parameters
 const systemSettings defaultSettings =  {
     true,     // rawData
-    3,        // countDown
-    20,       // frequency
+    10,       // countDown
+    1,        // frequency
     101325,   // pressure
     0.66,     // humidity
     3.14e-4,  // CO2MoleFraction
