@@ -10,7 +10,7 @@
 #include "globals.hpp"
 #include "led.hpp"
 
-extern int dataFileNumber;
+extern int  dataFileNumber;
 extern File dataFile;
 extern File errorFile;
 extern char dataFileName[13];
@@ -24,10 +24,12 @@ void noSD();
 bool errorLogSetup();
 bool getSettingsFromFile();
 void nextDataFileName();
+void previousDataFileName();
 void determineDataFileNumber();
 void sdSetup();
 bool dataFileHeader();
 bool logData(measurement data);
 bool logData_fp(measurement_fp data_fp);
+bool removeCurrentDataFile();
 
 #endif

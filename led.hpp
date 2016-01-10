@@ -5,6 +5,7 @@
 #define __LED_HPP__
 
 #include "globals.hpp"
+#include "sd.hpp"
 
 extern volatile uint8_t PULSE_COUNT;
 
@@ -32,6 +33,7 @@ void ledCyan();
 void ledBlue();
 void ledMagenta();
 uint8_t pulse();
+void ledCountdown();
 void led();
 
 #endif

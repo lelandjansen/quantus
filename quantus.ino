@@ -25,8 +25,6 @@ void setup() {
 
 void loop() {
 
-  // Serial.println(F("-3"));
-
   state();
 
 } // End of loop
