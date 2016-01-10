@@ -20,6 +20,8 @@ void pinSetup() {
 
   // SD card
   pinMode(CHIP_SELECT, OUTPUT);
+  pinMode(CARD_DETECT, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(CARD_DETECT), sdChange, CHANGE);
 
   // !!!! Attach CD pin as interrupt
   // https://developer.mbed.org/cookbook/SD-Card-File-System

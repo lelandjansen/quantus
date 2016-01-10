@@ -68,12 +68,10 @@ void dataSetup() {
   // }
 
   // Create data file
-  if (dataFileHeader()) {
-    NEXT_STATE = STATE_DATA_COLLECT;
-  }
-  else {
+  if (!dataFileHeader()) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // ERROR: Could not create data file
+    Serial.println(F("Error: Cannot write file to SD card."));
     NEXT_STATE = STATE_ERROR;
     return;
   }
@@ -97,28 +95,25 @@ void dataSetup() {
   d_speedOfSoundInitial    = computeSpeedOfSoundDerivative(temperatureInitial);
   D_SPEED_OF_SOUND_INITIAL = (uint32_t)(d_speedOfSoundInitial * 1e4);
 
-  // Serial.print(F("temperatureInitial       "));
-  // Serial.println(temperatureInitial, 6);
-  // Serial.print(F("TEMPERATURE_INITIAL      "));
-  // Serial.println(TEMPERATURE_INITIAL);
-  // Serial.print(F("speedOfSoundInitial      "));
-  // Serial.println(speedOfSoundInitial, 6);
-  // Serial.print(F("SPEED_OF_SOUND_INITIAL   "));
-  // Serial.println(SPEED_OF_SOUND_INITIAL);
-  // Serial.print(F("d_speedOfSoundInitial    "));
-  // Serial.println(d_speedOfSoundInitial, 6);
-  // Serial.print(F("D_SPEED_OF_SOUND_INITIAL "));
-  // Serial.println(D_SPEED_OF_SOUND_INITIAL);
-  // Serial.println();
+  Serial.println(F("Start countdown"));
+  // Countdown to data collection
+  ledCountdown();
+  Serial.println(F("End countdown"));
 
-  // Blink countdown
-  for (int i = 0; i <= SETTINGS.countDown; i++) {
-    ledYellow();
-    if (i == 0) delay(250);
-    else delay (850);
-    ledGreen();
-    if (i != SETTINGS.countDown) delay(150);
+  if (NEXT_STATE == STATE_NO_SD) {
+    return;
   }
+  else if (NEXT_STATE == STATE_DATA_CONCLUDE) {
+    if (!removeCurrentDataFile()) {
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // Error: Could not remove data file
+      Serial.println(F("Error: Could not remove data file."));
+      NEXT_STATE = STATE_ERROR;
+    }
+    return;
+  }
+
+  NEXT_STATE = STATE_DATA_COLLECT;
 
   // Set START_TIME to current time
   LAST_DATA_COLLECT = 0;
@@ -148,6 +143,7 @@ void dataCollect() {
     if (!logData(data)) {
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // ERROR: Cannot write file to SD card
+      Serial.println(F("Error: Cannot write file to SD card"));
       NEXT_STATE = STATE_ERROR;
       return;
     }
@@ -156,6 +152,7 @@ void dataCollect() {
     if (DATA_COUNT >= 1000) {
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // WARNING: Cannot collect more than 1000 data points
+      Serial.println(F("Warning: Cannot collect more than 1000 data points"));
       NEXT_STATE = STATE_WARNING;
       return;
     }
@@ -181,7 +178,6 @@ void dataCollect_fp() {
 
     LAST_DATA_COLLECT = micros();
 
-
     // Take measurement
     measurement_fp data_fp = takeMeasurement_fp();
 
@@ -189,7 +185,7 @@ void dataCollect_fp() {
     if (!logData_fp(data_fp)) {
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // ERROR: Cannot write file to SD card
-      Serial.println(F("Error logging data"));
+      Serial.println(F("Error: Cannot write data to SD card."));
       NEXT_STATE = STATE_ERROR;
       return;
     }
@@ -199,6 +195,7 @@ void dataCollect_fp() {
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // WARNING: Cannot collect more than 1000 data points
       NEXT_STATE = STATE_WARNING;
+      Serial.println(F("Warning: Cannot collect more than 1000 data points."));
       return;
     }
 
