@@ -7,6 +7,9 @@
 // Run the function of the next state
 void state() {
 
+  // Serial.println(F("-2"));
+  // Serial.println(NEXT_STATE);
+
   switch (NEXT_STATE) {
 
     case STATE_NO_SD:
@@ -31,7 +34,6 @@ void state() {
 
     case STATE_DATA_COLLECT:
       STATE = STATE_DATA_COLLECT;
-      // dataCollect();
       dataCollect_fp();
       break;
 
@@ -47,7 +49,7 @@ void state() {
 
     case STATE_ERROR:
       STATE = STATE_ERROR;
-      // function
+      noSD();
       break;
 
   } // End of switch

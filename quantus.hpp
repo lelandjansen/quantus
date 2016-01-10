@@ -6,7 +6,6 @@
 #define __QUANTUS_HPP__
 
 #include <Arduino.h>
-#include <TimerOne.h>
 #include "globals.hpp"
 #include "pinSetup.hpp"
 #include "led.hpp"

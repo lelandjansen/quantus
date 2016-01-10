@@ -103,6 +103,45 @@ uint8_t pulse() {
 
 
 
+// ledCountdown blinks the LED counting down to data collection
+void ledCountdown() {
+
+  // If a countdown is specified
+  if (SETTINGS.countdown) {
+    uint32_t countdownStart;
+
+    // Make the LED yellow for 250 milliseconds
+    countdownStart = millis();
+    while (sdInserted()
+     && millis() - countdownStart < 250
+     && NEXT_STATE != STATE_DATA_CONCLUDE) {
+      ledYellow();
+    }
+
+    // Blink the LED green for 150 milliseconds once every second
+    countdownStart = millis();
+    ledGreen();
+    while (sdInserted()
+     && millis() - countdownStart < 1000 * SETTINGS.countdown
+     && NEXT_STATE != STATE_DATA_CONCLUDE) {
+      if ((millis() - countdownStart)%1000 > 149) {
+        ledYellow();
+      }
+      else { //if ((millis() - countdownStart)%150 == 0) {
+        ledGreen();
+      }
+    }
+  }
+
+} // End of ledCountdown
+
+
+
+
+
+
+
+// led modifies the LED colour depending on the current state and button state
 void led() {
 
   // If button has been pressed
@@ -122,26 +161,10 @@ void led() {
 
     switch (STATE) {
       case STATE_NO_SD:
-        // Blinking red/white
-
-        //   0- 63  red
-        //  64-127  white
-        // 128-191  red
-        // 192-255  white
-
-        if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
-         || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
-          // Red
-          analogWrite(LED_RED,     0);
-          analogWrite(LED_GREEN, 255);
-          analogWrite(LED_BLUE,  255);
-        }
-        else {
-          // White
-          analogWrite(LED_RED,     0);
-          analogWrite(LED_GREEN,   0);
-          analogWrite(LED_BLUE,    0);
-        }
+        // Pulsing red/orange
+        analogWrite(LED_RED,   0);
+        analogWrite(LED_GREEN, 255-pulse()/4);
+        analogWrite(LED_BLUE,  255);
         break;
 
       case STATE_SD_SETUP:
@@ -159,26 +182,12 @@ void led() {
         break;
 
       case STATE_DATA_SETUP:
-        // Blink green on white
-        if (pulse() >= 0 && pulse() < 6) {
-          // Solid green
-          analogWrite(LED_RED,   255);
-          analogWrite(LED_GREEN,   0);
-          analogWrite(LED_BLUE,  255);
-        }
-        else {
-          // Solid yellow
-          analogWrite(LED_RED,     0);
-          analogWrite(LED_GREEN,   0);
-          analogWrite(LED_BLUE,  255);
-        }
+        // Colour controlled within setup function
         break;
 
       case STATE_DATA_COLLECT:
         // Solid green
-        analogWrite(LED_RED,   255);
-        analogWrite(LED_GREEN,   0);
-        analogWrite(LED_BLUE,  255);
+        ledGreen();
         break;
 
       case STATE_DATA_CONCLUDE:
@@ -191,42 +200,16 @@ void led() {
       case STATE_WARNING:
         // Blinking red/yellow
         if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
-         || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
-          // Red
-          analogWrite(LED_RED,     0);
-          analogWrite(LED_GREEN, 255);
-          analogWrite(LED_BLUE,  255);
-        }
-        else {
-          // Yellow
-          analogWrite(LED_RED,     0);
-          analogWrite(LED_GREEN,   0);
-          analogWrite(LED_BLUE,  255);
-        }
+         || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) ledRed();
+        else ledYellow();
         break;
 
       case STATE_ERROR:
-
-      // Blinking red/yellow
+      // Blinking red/white
       if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63)
-       || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) {
-        // Red
-        analogWrite(LED_RED,     0);
-        analogWrite(LED_GREEN, 255);
-        analogWrite(LED_BLUE,  255);
-      }
-      else {
-        // Yellow
-        analogWrite(LED_RED,     0);
-        analogWrite(LED_GREEN,   0);
-        analogWrite(LED_BLUE,  255);
-      }
-
-        // // Solid red
-        // analogWrite(LED_RED,     0);
-        // analogWrite(LED_GREEN, 255);
-        // analogWrite(LED_BLUE,  255);
-        // break;
+       || (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) ledRed();
+      else ledWhite();
+      break;
 
     } // End of switch
 
