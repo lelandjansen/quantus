@@ -7,20 +7,26 @@
 #include <SPI.h>
 #include <SdFat.h>
 #include <stdlib.h>
+#include <ArduinoJson.h>
 #include "globals.hpp"
 #include "led.hpp"
 
-extern int  dataFileNumber;
+
+
+extern int DATA_FILE_NUMBER;
 extern File dataFile;
-extern File errorFile;
-extern char dataFileName[13];
+extern File logFile;
+extern char dataFileName[14];
+extern const char settingsFileName[];
+extern const char logFileName[];
 
 
 bool sdInserted();
 void sdChange();
 void noSD();
-// bool openDataFile();
-// void closeDataFile();
+bool logSettingsFileError(bool setToDefault, int variableIndex);
+bool printUnderscoresToLogFile();
+bool printMaximumDataError();
 bool errorLogSetup();
 bool getSettingsFromFile();
 void nextDataFileName();
