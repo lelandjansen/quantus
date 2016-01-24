@@ -50,19 +50,21 @@
 
 extern volatile uint8_t STATE;
 extern volatile uint8_t NEXT_STATE;
+extern bool ERROR_ENCOUNTERED;
 
 
 
 // Settings struct
 typedef struct {
-  bool    rawData;         // Set whether raw data should be included
-  uint8_t countdown;       // Countdown to data collection (seconds)
-  uint8_t frequency;       // Data collection frequency (Hertz)
-  double  pressure;        // Atmospheric pressure (Pascales)
-  double  humidity;        // Relative humidity (fraction)
-  double  CO2MoleFraction; // Carbon dioxide mole fraction (fraction)
-  bool    autoTemperature; // Determine whether
-  double  temperature;     // temperature (degrees Celsius)
+  bool     rawData;         // Set whether raw data should be included
+  uint8_t  countdown;       // Countdown to data collection (seconds)
+  uint8_t  frequency;       // Data collection frequency (Hertz)
+  double   pressure;        // Atmospheric pressure (Pascales)
+  double   humidity;        // Relative humidity (fraction)
+  double   CO2MoleFraction; // Carbon dioxide mole fraction (fraction)
+  bool     autoTemperature; // Determine whether
+  double   temperature;     // temperature (degrees Celsius)
+  uint16_t maximumData;     // Maximum amount of data that can be collected
 } systemSettings;
 
 // Measurement struct
@@ -90,19 +92,20 @@ typedef struct {
 extern systemSettings SETTINGS;
 
 // Default parameters
-const systemSettings defaultSettings =  {
-    true,     // rawData
+const systemSettings SETTINGS_DEFAULT =  {
+    false,    // rawData
     3,        // countDown
-    20,       // frequency
+    10,       // frequency
     101325,   // pressure
     0.66,     // humidity
     3.14e-4,  // CO2MoleFraction
     true,     // autoTemperature
-    20        // temperature
+    20,       // temperature
+    1000      // maximumData
   };
 
 // Lowest acceptable parameters
-const systemSettings minimumSettings = {
+const systemSettings SETTINGS_MINIMUM = {
     false,    // rawData
     0,        // countDown
     1,        // frequency
@@ -110,11 +113,12 @@ const systemSettings minimumSettings = {
     0,        // humidity
     0,        // CO2MoleFraction
     false,    // autoTemperature
-    0         // temperature
+    0,        // temperature
+    1         // maximumData
   };
 
 // Highest acceptable parameters
-const systemSettings maximumSettings = {
+const systemSettings SETTINGS_MAXIMUM = {
     true,     // rawData
     60,       // countDown
     20,       // frequency
@@ -122,7 +126,9 @@ const systemSettings maximumSettings = {
     1,        // humidity             // CHECK!!! Formula rated up to 0.06 H20 mole fraction
     0.01,     // CO2MoleFraction
     true,     // autoTemperature
-    30        // temperature
+    30,       // temperature
+    65535     // maximumData (maximum uint16_t value)
   };
+
 
 #endif

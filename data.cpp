@@ -60,18 +60,9 @@ void dataSetup() {
   // SET DATA_COUNT to zero
   DATA_COUNT = 0;
 
-  // if(!openDataFile()) {
-  //   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //   // ERROR: Could not open data file
-  //   NEXT_STATE = STATE_ERROR;
-  //   return;
-  // }
-
   // Create data file
   if (!dataFileHeader()) {
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // ERROR: Could not create data file
-    Serial.println(F("Error: Cannot write file to SD card."));
     NEXT_STATE = STATE_ERROR;
     return;
   }
@@ -105,9 +96,7 @@ void dataSetup() {
   }
   else if (NEXT_STATE == STATE_DATA_CONCLUDE) {
     if (!removeCurrentDataFile()) {
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // Error: Could not remove data file
-      Serial.println(F("Error: Could not remove data file."));
       NEXT_STATE = STATE_ERROR;
     }
     return;
@@ -141,19 +130,18 @@ void dataCollect() {
 
     // Log measurement to sd card
     if (!logData(data)) {
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // ERROR: Cannot write file to SD card
-      Serial.println(F("Error: Cannot write file to SD card"));
       NEXT_STATE = STATE_ERROR;
       return;
     }
 
     DATA_COUNT++;
-    if (DATA_COUNT >= 1000) {
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      // WARNING: Cannot collect more than 1000 data points
-      Serial.println(F("Warning: Cannot collect more than 1000 data points"));
-      NEXT_STATE = STATE_WARNING;
+    if (DATA_COUNT >= SETTINGS.maximumData) {
+        NEXT_STATE = STATE_WARNING;
+        if (!printMaximumDataError())  {
+          NEXT_STATE = STATE_NO_SD;
+          return;
+        }
       return;
     }
 
@@ -183,19 +171,18 @@ void dataCollect_fp() {
 
     // Log measurement to sd card
     if (!logData_fp(data_fp)) {
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // ERROR: Cannot write file to SD card
-      Serial.println(F("Error: Cannot write data to SD card."));
       NEXT_STATE = STATE_ERROR;
       return;
     }
 
     DATA_COUNT++;
-    if (DATA_COUNT >= 1000) {
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      // WARNING: Cannot collect more than 1000 data points
-      NEXT_STATE = STATE_WARNING;
-      Serial.println(F("Warning: Cannot collect more than 1000 data points."));
+    if (DATA_COUNT >= SETTINGS.maximumData) {
+        NEXT_STATE = STATE_WARNING;
+        if (!printMaximumDataError())  {
+          NEXT_STATE = STATE_NO_SD;
+          return;
+        }
       return;
     }
 
