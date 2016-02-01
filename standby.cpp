@@ -1,9 +1,10 @@
 // QUANTUS
 // standby.cpp
 
+#include "standby.hpp"
 
+
+// Standby state
 void standby() {
-
-  // Do nothing
-
+  return; // Do nothing
 } // End of standby

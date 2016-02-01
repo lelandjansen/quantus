@@ -1,7 +1,7 @@
 // QUANTUS
 // speedOfSound.cpp
 
-/* REFERENCE for speed of sound calculation
+/* REFERENCE for speed of sound in air equation
  * O.Cramer, "The variation of the specific heat ratio and the speed of sound in
  *   air with temperature, pressure, humidity, and CO2 concentration,"
  *   J. Acoust. Soc. Am. 93, 2510-2516 (1993).
@@ -11,8 +11,11 @@
 #include "speedOfSound.hpp"
 
 uint32_t TEMPERATURE_INITIAL;
-uint32_t   SPEED_OF_SOUND_INITIAL;
+uint32_t SPEED_OF_SOUND_INITIAL;
 uint32_t D_SPEED_OF_SOUND_INITIAL;
+
+
+
 
 
 // Convert temperature from degrees Celsius to Kelvin
@@ -51,6 +54,7 @@ double computeEnhncementFactorDerivative(double temperature) {
     return d_f;
 
 } // End of computeEnhncementFactorDerivative
+
 
 
 
@@ -128,8 +132,9 @@ double computeH2OMoleFractionInAirDerivative(double temperature) {
 
 
 
+
 // Compute speed of sound in air based on temperature, atmospheric pressure,
-// relative humidity, and carbon dioxide mole fraction
+//  relative humidity, and carbon dioxide mole fraction
 double computeSpeedOfSound(double temperature) {
 
     // Constant variables
@@ -179,13 +184,14 @@ double computeSpeedOfSoundDerivative(double temperature) {
 
     return d_c;
 
-
 } // End of computeSpeedOfSoundDerivative
 
 
 
 
-uint32_t computeSpeedOfSoundLinearApproximation_fp(uint32_t temperature) {
+
+// Compute the speed of sound in air using a linear approximation (fiexed point)
+uint32_t computeSpeedOfSoundLinearApproximation(uint32_t temperature) {
 
     // Linear approximation:
     // L(x) = f(a) + f'(a)(x-a)
@@ -208,4 +214,4 @@ uint32_t computeSpeedOfSoundLinearApproximation_fp(uint32_t temperature) {
 
     return speedOfSound;
 
-} // End of speedOfSoundLinearApproximation_fp
+} // End of speedOfSoundLinearApproximation

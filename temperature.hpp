@@ -6,7 +6,8 @@
 
 #include "globals.hpp"
 
-double   measureTemperature();
-uint32_t measureTemperature_fp();
+// Measure ambient air temperature
+double   measureTemperature_float();
+uint32_t measureTemperature_fixed();
 
 #endif

@@ -4,13 +4,13 @@
 #ifndef __SD_HPP__
 #define __SD_HPP__
 
+
 #include <SPI.h>
 #include <SdFat.h>
 #include <stdlib.h>
 #include <ArduinoJson.h>
 #include "globals.hpp"
 #include "led.hpp"
-
 
 
 extern int DATA_FILE_NUMBER;
@@ -34,8 +34,9 @@ void previousDataFileName();
 void determineDataFileNumber();
 void sdSetup();
 bool dataFileHeader();
-bool logData(measurement data);
-bool logData_fp(measurement_fp data_fp);
+bool logData_float(measurement_float data);
+bool logData_fixed(measurement_fixed data);
 bool removeCurrentDataFile();
+
 
 #endif
