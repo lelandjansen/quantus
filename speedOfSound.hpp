@@ -37,11 +37,10 @@ const double K21  =    3.14e-8;
 const double K22  =    5.6e-7;
 
 
-
+// Variables
 extern uint32_t TEMPERATURE_INITIAL;
-extern uint32_t   SPEED_OF_SOUND_INITIAL;
+extern uint32_t SPEED_OF_SOUND_INITIAL;
 extern uint32_t D_SPEED_OF_SOUND_INITIAL;
-
 
 
 
@@ -55,8 +54,7 @@ double   computeH2OMoleFractionInAir(double temperature);
 double   computeH2OMoleFractionInAirDerivative(double temperature);
 double   computeSpeedOfSound(double temperature);
 double   computeSpeedOfSoundDerivative(double temperature);
-uint32_t computeSpeedOfSoundLinearApproximation_fp(uint32_t temperature);
-
+uint32_t computeSpeedOfSoundLinearApproximation(uint32_t temperature);
 
 
 #endif

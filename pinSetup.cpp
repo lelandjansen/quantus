@@ -3,11 +3,8 @@
 
 #include "pinSetup.hpp"
 
-
+// Digital pin setup
 void pinSetup() {
-
-
-  // Digital pin setup
 
   // Button (interrupt)
   pinMode(BUTTON, INPUT);
@@ -23,20 +20,12 @@ void pinSetup() {
   pinMode(CARD_DETECT, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(CARD_DETECT), sdChange, CHANGE);
 
-  // !!!! Attach CD pin as interrupt
-  // https://developer.mbed.org/cookbook/SD-Card-File-System
-
-
-
   // Ultrasonic sensor
   pinMode(ULTRASONIC_TRIGGER, OUTPUT);
   pinMode(ULTRASONIC_ECHO,    INPUT);
 
-
-
   // Temperature sensor
   // TMP36 temperature sensor using 3.3 V (not 5 V)
   analogReference(EXTERNAL);
-
 
 } // End of pinSetup

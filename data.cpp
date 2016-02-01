@@ -9,40 +9,40 @@ double   START_TIME_DOUBLE;
 uint32_t LAST_DATA_COLLECT;
 uint32_t PERIOD;
 
-// Take measurements
-measurement takeMeasurement() {
 
-  measurement data;
+// Take measurements (floating point)
+measurement_float takeMeasurement_float() {
+
+  measurement_float data;
 
   data.time         = (double)micros() * 1.e-6 - START_TIME_DOUBLE;
-  data.pingTime     = measurePingTime();
-  data.temperature  = measureTemperature();
+  data.pingTime     = measurePingTime_float();
+  data.temperature  = measureTemperature_float();
   data.speedOfSound = computeSpeedOfSound(data.temperature);
-  data.distance     = computeDistance(data.pingTime, data.speedOfSound);
+  data.distance     = computeDistance_float(data.pingTime, data.speedOfSound);
 
   return data;
 
-} // End of takeMeasurement
+} // End of takeMeasurement_float
 
 
 
 
 
-// Take measurements
-// Fixed-point calculation
-measurement_fp takeMeasurement_fp() {
+// Take measurements (fixed point)
+measurement_fixed takeMeasurement_fixed() {
 
-  measurement_fp data_fp;
+  measurement_fixed data;
 
-  data_fp.time         = micros() - START_TIME_INT;
-  data_fp.pingTime     = measurePingTime_fp();
-  data_fp.temperature  = measureTemperature_fp();
-  data_fp.speedOfSound = computeSpeedOfSoundLinearApproximation_fp(data_fp.temperature);
-  data_fp.distance     = computeDistance_fp(data_fp.pingTime, data_fp.speedOfSound);
+  data.time         = micros() - START_TIME_INT;
+  data.pingTime     = measurePingTime_fixed();
+  data.temperature  = measureTemperature_fixed();
+  data.speedOfSound = computeSpeedOfSoundLinearApproximation(data.temperature);
+  data.distance     = computeDistance_fixed(data.pingTime, data.speedOfSound);
 
-  return data_fp;
+  return data;
 
-} // End of takeMeasurement
+} // End of takeMeasurement_fixed
 
 
 
@@ -57,16 +57,15 @@ void dataSetup() {
 
   ledYellow();
 
-  // SET DATA_COUNT to zero
   DATA_COUNT = 0;
 
   // Create data file
   if (!dataFileHeader()) {
-    // ERROR: Could not create data file
     NEXT_STATE = STATE_ERROR;
     return;
   }
 
+  // Compute the data collection period
   PERIOD = 1000000 / (uint32_t)SETTINGS.frequency;
 
 
@@ -74,10 +73,12 @@ void dataSetup() {
   // Convert to fixed-point
 
   // Measure temperature once but do not use reading
-  measureTemperature();
+  measureTemperature_float();
   delay(100);
 
-  temperatureInitial       = measureTemperature();
+  // Take floating point measurements and convert to fixed point
+
+  temperatureInitial       = measureTemperature_float();
   TEMPERATURE_INITIAL      = (uint32_t)(temperatureInitial * 1e6);
 
   speedOfSoundInitial      = computeSpeedOfSound(temperatureInitial);
@@ -86,25 +87,21 @@ void dataSetup() {
   d_speedOfSoundInitial    = computeSpeedOfSoundDerivative(temperatureInitial);
   D_SPEED_OF_SOUND_INITIAL = (uint32_t)(d_speedOfSoundInitial * 1e4);
 
-  Serial.println(F("Start countdown"));
+
   // Countdown to data collection
   ledCountdown();
-  Serial.println(F("End countdown"));
 
-  if (NEXT_STATE == STATE_NO_SD) {
-    return;
-  }
+
+  if (NEXT_STATE == STATE_NO_SD) return;
   else if (NEXT_STATE == STATE_DATA_CONCLUDE) {
-    if (!removeCurrentDataFile()) {
-      // Error: Could not remove data file
-      NEXT_STATE = STATE_ERROR;
-    }
+    if (!removeCurrentDataFile()) NEXT_STATE = STATE_ERROR;
     return;
   }
+
 
   NEXT_STATE = STATE_DATA_COLLECT;
 
-  // Set START_TIME to current time
+
   LAST_DATA_COLLECT = 0;
   START_TIME_INT    = micros();
   START_TIME_DOUBLE = (double)START_TIME_INT * 1.e-6;
@@ -115,82 +112,85 @@ void dataSetup() {
 
 
 
-// Collect data
-void dataCollect() {
+// Collect data (floating point)
+void dataCollect_float() {
+
+
 
   if (micros() - LAST_DATA_COLLECT - 44e-6 >= PERIOD) {
-
+  // Note: Measurement tends to take an extra 44 microseconds (hence -44e-6)
 
     ledWhite();
 
     LAST_DATA_COLLECT = micros();
 
-    // Take measurement
-    measurement data = takeMeasurement();
+    // Take measurements (floating point)
+    measurement_float data = takeMeasurement_float();
 
-    // Log measurement to sd card
-    if (!logData(data)) {
-      // ERROR: Cannot write file to SD card
+    // Write measurement to data file on the SD card
+    if (!logData_float(data)) {
       NEXT_STATE = STATE_ERROR;
       return;
     }
 
     DATA_COUNT++;
+
+
     if (DATA_COUNT >= SETTINGS.maximumData) {
-        NEXT_STATE = STATE_WARNING;
-        if (!printMaximumDataError())  {
-          NEXT_STATE = STATE_NO_SD;
-          return;
-        }
+      NEXT_STATE = STATE_WARNING;
+      // Write the warning to the log file
+      if (!printMaximumDataError()) NEXT_STATE = STATE_ERROR;
       return;
     }
 
+    // Turn the LED green to symbolize that we are in the data collection state
+    //  however data is not being collected
     ledGreen();
 
-  }
+  } // End of if
 
-} // End of dataCollect
-
-
+} // End of dataCollect_float
 
 
-// Collect data
-// Fixed-point calculations
-void dataCollect_fp() {
 
-  // Measurement tends to take an extra 44 microseconds (hence -44)
+
+// Collect data (fixed point)
+void dataCollect_fixed() {
+
+
+
   if (micros() - LAST_DATA_COLLECT >= PERIOD - 44) {
+  // Note: Measurement tends to take an extra 44 microseconds (hence -44)
 
     ledWhite();
 
-
     LAST_DATA_COLLECT = micros();
 
-    // Take measurement
-    measurement_fp data_fp = takeMeasurement_fp();
+    // Take measurements (fixed point)
+    measurement_fixed data = takeMeasurement_fixed();
 
-    // Log measurement to sd card
-    if (!logData_fp(data_fp)) {
-      // ERROR: Cannot write file to SD card
+    // Write measurement to data file on the SD card
+    if (!logData_fixed(data)) {
       NEXT_STATE = STATE_ERROR;
       return;
     }
 
     DATA_COUNT++;
+
     if (DATA_COUNT >= SETTINGS.maximumData) {
-        NEXT_STATE = STATE_WARNING;
-        if (!printMaximumDataError())  {
-          NEXT_STATE = STATE_NO_SD;
-          return;
-        }
+      NEXT_STATE = STATE_WARNING;
+      // Write the warning to the log file
+      if (!printMaximumDataError()) NEXT_STATE = STATE_NO_SD;
       return;
     }
 
+    // Turn the LED green to symbolize that we are in the data collection state
+    //  however data is not being collected
     ledGreen();
 
-  }
+  } // End of if
 
-} // End of dataCollect_fp
+} // End of dataCollect_fixed
 
 
 
@@ -199,12 +199,9 @@ void dataCollect_fp() {
 // Finish data collection
 void dataConclude() {
 
-  // closeDataFile();
-
-  // Attach new timer interrupt (change led colour)
+  // Attach new timer interrupt (pulse led colour)
   Timer1.attachInterrupt(led, 10000);
 
-  // Increment file name
   nextDataFileName();
 
   NEXT_STATE = STATE_STANDBY;

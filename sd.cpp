@@ -11,59 +11,53 @@ File settingsFile;
 File logFile;
 char dataFileName[14];
 const char settingsFileName[] = "qSettings.json";
-const char logFileName[] = "qLog.txt";
+const char logFileName[]      = "qLog.txt";
 
 
 
+
+
+// Check if SD card is inserted
 bool sdInserted() {
-  if (digitalRead(CARD_DETECT) == HIGH) {
-    return true;
-  }
-  else if (digitalRead(CARD_DETECT) == LOW) {
-    return false;
-  }
-}
+  return digitalRead(CARD_DETECT) == HIGH;
+} // End of sdInserted
 
 
+
+
+
+// Determine next state when SD card is inserted or removed
 void sdChange() {
-  if (sdInserted()) {
-    // SD Card is inserted
-    Serial.println(F("Inserted"));
-    NEXT_STATE = STATE_SD_SETUP;
-  }
+  if (sdInserted()) NEXT_STATE = STATE_SD_SETUP;
   else {
-    // SD Card is removed
-
-    // Attach new timer interrupt (change led colour)
     Timer1.attachInterrupt(led, 10000);
-
     NEXT_STATE = STATE_NO_SD;
-    Serial.println(F("Removed"));
   }
-} // End of SDInserted
+} // End of sdChange
+
+
 
 
 
 // State while no SD card is inserted
 void noSD() {
-
-  // No SD card is inserted
-
+  return; // No SD card is inserted
 } // End of noSD
 
 
 
 
 
-// Log errors in settings FILE_WRITE
+// Log errors encountered in settings JSON file
+// Returns true if successful, false if unsuccessful
 bool logSettingsFileError(bool setToDefault, int variableIndex) {
 
   // Print logFile underscores if an error has not already been encountered
   if (!ERROR_ENCOUNTERED && !printUnderscoresToLogFile()) return false;
 
-  // Set next state to warning
   NEXT_STATE = STATE_WARNING;
 
+  // Array of variable names in JSON file
   char* variableName[] = {
     "rawData",
     "countdown",
@@ -76,19 +70,27 @@ bool logSettingsFileError(bool setToDefault, int variableIndex) {
     "maximumData"
   };
 
+  // Open log file on SD card
   logFile = SD.open(logFileName, FILE_WRITE);
+
+  // Write warning to log file
+  //
+  // If variable is not to be set to default, write to log file:
+  // "Warning: Cannot parse <variableName> or value out of range in
+  //  <settingsFile> file. Assigning default value."
+  //
+  // If variable is to be set to default, write to log file:
+  // "Warning: Cannot parse <variableName> or value out of range in
+  //  <settingsFile> file. Errors might occur.."
   if (logFile) {
     logFile.print(F("Warning: Cannot not parse \""));
     logFile.print(variableName[variableIndex]);
     logFile.print(F("\" or value out of range in \""));
     logFile.print(settingsFileName);
     logFile.print(F("\" file."));
-    if (setToDefault) {
-      logFile.println(F(" Assigning default value."));
-    }
-    else {
-      logFile.println(F(" Errors might occur."));
-    }
+
+    if (setToDefault) logFile.println(F(" Assigning default value."));
+    else logFile.println(F(" Errors might occur."));
   }
   else return false;
 
@@ -102,7 +104,11 @@ bool logSettingsFileError(bool setToDefault, int variableIndex) {
 
 
 
+// Write unserscores in log file to symbolize the start of a new series of
+//  warnings/erros
+// Returns true if successful, false if unsuccessful
 bool printUnderscoresToLogFile() {
+
   logFile = SD.open(logFileName, FILE_WRITE);
   if (logFile) {
     // Print line of underscores
@@ -114,6 +120,7 @@ bool printUnderscoresToLogFile() {
     logFile.close();
   }
   else return false;
+
   return true;
 } // End of printUnderscoresToLogFile
 
@@ -121,19 +128,27 @@ bool printUnderscoresToLogFile() {
 
 
 
+// Error to print if the maximum amount of data allowed to be collected has been
+//  reached
+// Returns true if successful, false if unsuccessful
 bool printMaximumDataError() {
 
   // Print logFile underscores if an error has not already been encountered
   if (!ERROR_ENCOUNTERED && !printUnderscoresToLogFile()) return false;
 
+  // Write warning to log file
+  // "Warning: Cannot collect more than <maximumData> data measurements."
   logFile = SD.open(logFileName);
   if (logFile) {
     logFile.print(F("Warning: Cannot collect more than "));
     logFile.print(SETTINGS.maximumData);
     logFile.println(F(" data measurements."));
+    // Close the file
     logFile.close();
   }
   else return false;
+
+  return true;
 
 } // End of printMaximumDataError
 
@@ -141,10 +156,11 @@ bool printMaximumDataError() {
 
 
 
-
+// Set up the error log file
 bool errorLogSetup() {
 
-  // If log file does not exist, create it
+  // If log file does not exist, write header to log file
+  // "Quantus: Error/warning log"
   if (!SD.exists(logFileName)) {
     logFile = SD.open(logFileName, FILE_WRITE);
     if (logFile) {
@@ -153,6 +169,7 @@ bool errorLogSetup() {
     }
     else return false;
   }
+
   return true;
 
 } // End of errorLogSetup
@@ -160,7 +177,7 @@ bool errorLogSetup() {
 
 
 
-
+// Parse settings JSON file and extract configuration settings
 bool getSettingsFromFile() {
 
   const int bufferSize = 200;
@@ -168,23 +185,22 @@ bool getSettingsFromFile() {
 
   // If the settings file exists
   if (SD.exists(settingsFileName)) {
+
     settingsFile = SD.open(settingsFileName, FILE_READ);
     if (settingsFile) {
-      // Read file contents to buffer
+      // Read the JSON file contents to the string buffer
       int i = 0;
-      while (settingsFile.available()) {
-        if (i == bufferSize) break;
+      while (settingsFile.available() && i < bufferSize) {
         dataStringBuffer[i] = settingsFile.read();
         i++;
       }
     }
 
-
-    // Parse JSON data
-    // Note to self: Update buffer size in <> when updating string buffer size
-    StaticJsonBuffer<200> jsonBuffer;
+    // Parse JSON data (ArduinoJson library)
+    StaticJsonBuffer<bufferSize> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(dataStringBuffer);
 
+    // Set system settings to parsed JSON file values
     SETTINGS.rawData         = root["rawData"];
     SETTINGS.countdown       = root["countdown"];
     SETTINGS.frequency       = root["frequency"];
@@ -196,109 +212,105 @@ bool getSettingsFromFile() {
     SETTINGS.maximumData     = root["maximumData"];
 
 
-    // Verify data is within constraints
+    // Verify that user-specified settings are within constraints
+    // Log warning if settings cannot be parsed or are out of range
+    // Return false if a warning cannot be written to the error log file
 
     // rawData (0)
-    if (SETTINGS.rawData != true && SETTINGS.rawData != false) {
-      // Set rawData to default value
+    if (SETTINGS.rawData != true &&
+        SETTINGS.rawData != false) {
       SETTINGS.rawData = SETTINGS_DEFAULT.rawData;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 0)) return false;
+      if (!logSettingsFileError(true, 0)) return false;
     }
 
     // countdown (1)
     if (SETTINGS.countdown == NULL) {
-      // Set countdown to default value
       SETTINGS.countdown = SETTINGS_DEFAULT.countdown;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 1)) return false;
+      if (!logSettingsFileError(true, 1)) return false;
     }
-    else if (SETTINGS.countdown < SETTINGS_MINIMUM.countdown || SETTINGS.countdown > SETTINGS_MAXIMUM.countdown) {
-      // Log warning (out of range)
-      if (!logSettingsFileError(0, 1)) return false;
+    else if (SETTINGS.countdown < SETTINGS_MINIMUM.countdown ||
+             SETTINGS.countdown > SETTINGS_MAXIMUM.countdown) {
+      if (!logSettingsFileError(false, 1)) return false;
     }
 
     // frequency (2)
-    if (SETTINGS.frequency == NULL || SETTINGS.frequency < SETTINGS_MINIMUM.frequency || SETTINGS.frequency > SETTINGS_MAXIMUM.frequency) {
-      // Set frequency to default value
+    if (SETTINGS.frequency == NULL ||
+        SETTINGS.frequency < SETTINGS_MINIMUM.frequency ||
+        SETTINGS.frequency > SETTINGS_MAXIMUM.frequency) {
       SETTINGS.frequency = SETTINGS_DEFAULT.frequency;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 2)) return false;
+      if (!logSettingsFileError(true, 2)) return false;
     }
 
     // pressure (3)
     if (SETTINGS.pressure == NULL) {
-      // Set pressure to default value
       SETTINGS.pressure = SETTINGS_DEFAULT.pressure;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 3)) return false;
+      if (!logSettingsFileError(true, 3)) return false;
     }
-    else if (SETTINGS.pressure < SETTINGS_MINIMUM.pressure || SETTINGS.pressure > SETTINGS_MAXIMUM.pressure) {
-      // Log warning (out of range)
-      if (!logSettingsFileError(0, 3)) return false;
+    else if (SETTINGS.pressure < SETTINGS_MINIMUM.pressure ||
+             SETTINGS.pressure > SETTINGS_MAXIMUM.pressure) {
+      if (!logSettingsFileError(false, 3)) return false;
     }
 
     // humidity (4)
     if (SETTINGS.humidity == NULL) {
-      // Set humidity to default value
       SETTINGS.humidity = SETTINGS_DEFAULT.humidity;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 4)) return false;
+      if (!logSettingsFileError(true, 4)) return false;
     }
-    else if (SETTINGS.humidity < SETTINGS_MINIMUM.humidity || SETTINGS.humidity > SETTINGS_MAXIMUM.humidity) {
-      // Log warning (out of range)
-      if (!logSettingsFileError(0, 4)) return false;
+    else if (SETTINGS.humidity < SETTINGS_MINIMUM.humidity ||
+             SETTINGS.humidity > SETTINGS_MAXIMUM.humidity) {
+      if (!logSettingsFileError(false, 4)) return false;
     }
 
     // CO2MoleFraction (5)
     if (SETTINGS.CO2MoleFraction == NULL) {
-      // Set CO2MoleFraction to default value
       SETTINGS.CO2MoleFraction = SETTINGS_DEFAULT.CO2MoleFraction;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 5)) return false;
+      if (!logSettingsFileError(true, 5)) return false;
     }
-    else if (SETTINGS.CO2MoleFraction < SETTINGS_MINIMUM.CO2MoleFraction || SETTINGS.CO2MoleFraction > SETTINGS_MAXIMUM.CO2MoleFraction) {
-      // Log warning (out of range)
-      if (!logSettingsFileError(0, 5)) return false;
+    else if (SETTINGS.CO2MoleFraction < SETTINGS_MINIMUM.CO2MoleFraction ||
+             SETTINGS.CO2MoleFraction > SETTINGS_MAXIMUM.CO2MoleFraction) {
+      if (!logSettingsFileError(true, 5)) return false;
     }
 
     // autoTemperature (6)
-    if (SETTINGS.autoTemperature == NULL || (SETTINGS.autoTemperature != false && SETTINGS.autoTemperature != true)) {
-      // Set autoTemperature to default value
+    if (SETTINGS.autoTemperature == NULL ||
+       (SETTINGS.autoTemperature != false &&
+        SETTINGS.autoTemperature != true)) {
       SETTINGS.autoTemperature = SETTINGS_DEFAULT.autoTemperature;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 6)) return false;
+      if (!logSettingsFileError(true, 6)) return false;
     }
 
     // temperature (7)
     if (!SETTINGS.autoTemperature) {
       if (SETTINGS.temperature == NULL) {
-        // Set CO2MoleFraction to default value
         SETTINGS.temperature = SETTINGS_DEFAULT.temperature;
-        // Log warning (cannot parse or out of range)
-        if (!logSettingsFileError(1, 7)) return false;
+        if (!logSettingsFileError(true, 7)) return false;
       }
-      else if (SETTINGS.temperature < SETTINGS_MINIMUM.temperature || SETTINGS.temperature > SETTINGS_MAXIMUM.temperature) {
-        // Log warning (out of range)
-        if (!logSettingsFileError(0, 7)) return false;
+      else if (SETTINGS.temperature < SETTINGS_MINIMUM.temperature ||
+               SETTINGS.temperature > SETTINGS_MAXIMUM.temperature) {
+        if (!logSettingsFileError(false, 7)) return false;
       }
     }
 
     // maximumData (8)
-    if (SETTINGS.maximumData == NULL || SETTINGS.maximumData < SETTINGS_MINIMUM.maximumData || SETTINGS.maximumData > SETTINGS_MAXIMUM.maximumData) {
-      // Set maximumData to default value
+    if (SETTINGS.maximumData == NULL ||
+        SETTINGS.maximumData < SETTINGS_MINIMUM.maximumData ||
+        SETTINGS.maximumData > SETTINGS_MAXIMUM.maximumData) {
       SETTINGS.maximumData = SETTINGS_DEFAULT.maximumData;
-      // Log warning (cannot parse or out of range)
-      if (!logSettingsFileError(1, 8)) return false;
+      if (!logSettingsFileError(true, 8)) return false;
     }
 
-  }
-  // If the settings file does not exist
+  } // End of if (i.e. settings file exists)
+
+
+  // If the settings file does not exist, create one containing default settings
   else {
 
     // Print logFile underscores if an error has not already been encountered
     if (!ERROR_ENCOUNTERED && !printUnderscoresToLogFile()) return false;
 
+    // Write warning to log file
+    // "Warning: Cannot find file "<settingsFileName>". New settings file
+    //  created containing default values."
     logFile = SD.open(logFileName, FILE_WRITE);
     if (logFile) {
       NEXT_STATE = STATE_WARNING;
@@ -310,14 +322,12 @@ bool getSettingsFromFile() {
     else return false;
 
 
-
+    // Create JSON settings file containing default settings
     settingsFile = SD.open(settingsFileName, FILE_WRITE);
     if (settingsFile) {
 
-      // Set SETTINGS to default
       SETTINGS = SETTINGS_DEFAULT;
 
-      // Print JSON file with default values to settings file
       settingsFile.print(F("{"));
         settingsFile.print(F("\"rawData\":"));
           if (SETTINGS_DEFAULT.rawData) settingsFile.print(F("true"));
@@ -364,15 +374,18 @@ bool getSettingsFromFile() {
 
 
 
+// Increment data file number and data file name by one
 void nextDataFileName() {
   DATA_FILE_NUMBER++;
   sprintf(dataFileName, "qData_%03i.csv", DATA_FILE_NUMBER);
 } // End of nextDataFileName
 
+// Decrement data file number and data file name by one
 void previousDataFileName() {
   DATA_FILE_NUMBER--;
   sprintf(dataFileName, "qData_%03i.csv", DATA_FILE_NUMBER);
 } // End of nextDataFileName
+
 
 
 
@@ -406,6 +419,7 @@ void sdSetup() {
 
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // FEATURE TO IMPLEMENT
   // Check available space on SD card
     // If SD card is almost full
       // Warning: SD card almost full
@@ -413,10 +427,8 @@ void sdSetup() {
       // Error: SD card is full
 
 
-
   // Set up error log file
   if (!errorLogSetup()) {
-    // Cannot create error log file
     NEXT_STATE = STATE_ERROR;
     return;
   }
@@ -424,13 +436,11 @@ void sdSetup() {
 
   // Get settings from file
   if (!getSettingsFromFile()) {
-    // Cannot get settings from file
     NEXT_STATE = STATE_ERROR;
     return;
   }
 
 
-  // Determine data file number
   determineDataFileNumber();
 
   // If data file number is between 990 and 998
@@ -442,6 +452,7 @@ void sdSetup() {
       NEXT_STATE = STATE_NO_SD;
       return;
     }
+
 
     logFile = SD.open(logFileName, FILE_WRITE);
     if (logFile) {
@@ -472,10 +483,7 @@ void sdSetup() {
 
   }
 
-  if (NEXT_STATE != STATE_WARNING && NEXT_STATE != STATE_ERROR) {
-    // Go to standby state
-    NEXT_STATE = STATE_STANDBY;
-  }
+  if (NEXT_STATE != STATE_WARNING && NEXT_STATE != STATE_ERROR) NEXT_STATE = STATE_STANDBY;
 
 
 } // End of sdSetup
@@ -483,6 +491,9 @@ void sdSetup() {
 
 
 
+
+// Write header to data file enumerating settings and data columns
+// Returns true if successful, false if unsuccessful
 bool dataFileHeader() {
 
   dataFile = SD.open(dataFileName, FILE_WRITE);
@@ -548,13 +559,16 @@ bool dataFileHeader() {
   else return false;
 
   return true;
-}
+
+} // End of dataFileHeader
 
 
 
 
 
-bool logData(measurement data) {
+// Log measured data to data file (floating point)
+// Returns true if successful, false if unsuccessful
+bool logData_float(measurement_float data) {
 
   dataFile = SD.open(dataFileName, FILE_WRITE);
   if (dataFile) {
@@ -583,32 +597,35 @@ bool logData(measurement data) {
   else return false;
 
 
-} // End of logData
+} // End of logData_float
 
 
 
 
 
-bool logData_fp(measurement_fp data_fp) {
+// Log measured data to data file (fixed point)
+// Returns true if successful, false if unsuccessful
+bool logData_fixed(measurement_fixed data) {
 
   dataFile = SD.open(dataFileName, FILE_WRITE);
   if (dataFile) {
+
     if (SETTINGS.rawData) {
-      dataFile.print(data_fp.time);
+      dataFile.print(data.time);
       dataFile.print("E-6,");
-      dataFile.print(data_fp.pingTime);
+      dataFile.print(data.pingTime);
       dataFile.print("E-6,");
-      dataFile.print(data_fp.temperature);
+      dataFile.print(data.temperature);
       dataFile.print("E-6,");
-      dataFile.print(data_fp.speedOfSound);
+      dataFile.print(data.speedOfSound);
       dataFile.print("E-6,");
-      dataFile.print(data_fp.distance);
+      dataFile.print(data.distance);
       dataFile.println("E-9");
     }
     else {
-      dataFile.print(data_fp.time);
+      dataFile.print(data.time);
       dataFile.print("E-6,");
-      dataFile.print(data_fp.distance);
+      dataFile.print(data.distance);
       dataFile.println("E-9");
     }
     dataFile.close();
@@ -617,13 +634,14 @@ bool logData_fp(measurement_fp data_fp) {
   }
   else return false;
 
+} // End of logData_fixed
 
-} // End of logData
 
 
 
 
 // Remove current data file
+// Returns true if successful, false if unsuccessful
 bool removeCurrentDataFile() {
   if (SD.remove(dataFileName)) {
     previousDataFileName();

@@ -4,8 +4,10 @@
 #ifndef __GLOBALS_HPP__
 #define __GLOBALS_HPP__
 
+
 #include <Arduino.h>
-#include <TimerOne.h>
+#include <TimerOne.h> // http://playground.arduino.cc/Code/Timer1
+
 
 // Arduino digital pins
 // Unused                     0
@@ -18,11 +20,10 @@
 #define ULTRASONIC_TRIGGER    7
 #define ULTRASONIC_ECHO       8
 #define LED_BLUE              9 // Use 100-ohm resistor (calculated 90 Ohms)
-//      SD_RESERVED          10 // ()    Must remain unused
+//      SD_RESERVED          10 // Must remain unused
 //      MOSI                 11 // (DI)
 //      MISO                 12 // (DO)
 //      CLK                  13 // (SCK)
-
 
 
 // Arduino analog pins
@@ -32,6 +33,7 @@
 // Unused                     3
 // Unused                     4
 // Unused                     5
+
 
 
 
@@ -45,14 +47,14 @@
 #define STATE_WARNING         6
 #define STATE_ERROR           7
 
-
-
-
+// State variables
 extern volatile uint8_t STATE;
 extern volatile uint8_t NEXT_STATE;
-extern bool ERROR_ENCOUNTERED;
+extern          bool    ERROR_ENCOUNTERED;
 
 
+
+// Structs
 
 // Settings struct
 typedef struct {
@@ -74,7 +76,7 @@ typedef struct {
   double temperature;
   double speedOfSound;
   double distance;
-} measurement;
+} measurement_float;
 
 // Measurement struct
 // For use with fixed-point calculations
@@ -85,50 +87,52 @@ typedef struct {
   uint32_t temperature;
   uint32_t speedOfSound;
   uint32_t distance;
-} measurement_fp;
+} measurement_fixed;
 
 
 
+
+// Settings
 extern systemSettings SETTINGS;
 
 // Default parameters
 const systemSettings SETTINGS_DEFAULT =  {
-    false,    // rawData
-    3,        // countDown
-    10,       // frequency
-    101325,   // pressure
-    0.66,     // humidity
-    3.14e-4,  // CO2MoleFraction
-    true,     // autoTemperature
-    20,       // temperature
-    1000      // maximumData
-  };
+  false,    // rawData
+  3,        // countDown
+  10,       // frequency
+  101325,   // pressure
+  0.66,     // humidity
+  3.14e-4,  // CO2MoleFraction
+  true,     // autoTemperature
+  20,       // temperature
+  1000      // maximumData
+};
 
 // Lowest acceptable parameters
 const systemSettings SETTINGS_MINIMUM = {
-    false,    // rawData
-    0,        // countDown
-    1,        // frequency
-    75000,    // pressure
-    0,        // humidity
-    0,        // CO2MoleFraction
-    false,    // autoTemperature
-    0,        // temperature
-    1         // maximumData
-  };
+  false,    // rawData
+  0,        // countDown
+  1,        // frequency
+  75000,    // pressure
+  0,        // humidity
+  0,        // CO2MoleFraction
+  false,    // autoTemperature
+  0,        // temperature
+  1         // maximumData
+};
 
 // Highest acceptable parameters
 const systemSettings SETTINGS_MAXIMUM = {
-    true,     // rawData
-    60,       // countDown
-    20,       // frequency
-    102000,   // pressure
-    1,        // humidity             // CHECK!!! Formula rated up to 0.06 H20 mole fraction
-    0.01,     // CO2MoleFraction
-    true,     // autoTemperature
-    30,       // temperature
-    65535     // maximumData (maximum uint16_t value)
-  };
+  true,     // rawData
+  60,       // countDown
+  20,       // frequency
+  102000,   // pressure
+  1,        // humidity             // CHECK!!! Formula rated up to 0.06 H20 mole fraction
+  0.01,     // CO2MoleFraction
+  true,     // autoTemperature
+  30,       // temperature
+  65535     // maximumData (maximum uint16_t value)
+};
 
 
 #endif

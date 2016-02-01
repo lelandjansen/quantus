@@ -6,28 +6,31 @@
 
 void setup() {
 
-  // Begin serial monitor
-  Serial.begin(9600);
+  // Begin serial monitor (used for debugging)
+  // Serial.begin(9600);
 
-  // Set up pins
   pinSetup();
 
-  // Timer interrupt
-  // Run the function ten times per second
+  // Set up timer interrupt
+  // Run the led function ten times per second
   Timer1.initialize(10000);
-  Timer1.attachInterrupt(led); // attach the service routine here
+  Timer1.attachInterrupt(led);
   PULSE_COUNT = 0;
 
-  sdChange();
+  sdInserted() ? NEXT_STATE = STATE_SD_SETUP : NEXT_STATE = STATE_NO_SD;
 
 } // End of setup
 
 
+
+
+
 void loop() {
-
-  state();
-
+  state(); // State machine
 } // End of loop
+
+
+
 
 
 // That's all folks!

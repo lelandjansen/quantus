@@ -7,9 +7,6 @@
 // Run the function of the next state
 void state() {
 
-  // Serial.println(F("-2"));
-  // Serial.println(NEXT_STATE);
-
   switch (NEXT_STATE) {
 
     case STATE_NO_SD:
@@ -24,7 +21,7 @@ void state() {
 
     case STATE_STANDBY:
       STATE = STATE_STANDBY;
-      // function
+      standby();
       break;
 
     case STATE_DATA_SETUP:
@@ -34,7 +31,7 @@ void state() {
 
     case STATE_DATA_COLLECT:
       STATE = STATE_DATA_COLLECT;
-      dataCollect_fp();
+      dataCollect_fixed();
       break;
 
     case STATE_DATA_CONCLUDE:
@@ -44,12 +41,12 @@ void state() {
 
     case STATE_WARNING:
       STATE = STATE_WARNING;
-      // function
+      warning();
       break;
 
     case STATE_ERROR:
       STATE = STATE_ERROR;
-      noSD();
+      error();
       break;
 
   } // End of switch
@@ -61,7 +58,9 @@ void state() {
 // Advance to next state
 void nextState() {
 
+  // If nextState has not yet been called (i.e. current state is next state)
   if (STATE == NEXT_STATE) {
+
     switch (STATE) {
 
       case STATE_NO_SD:
