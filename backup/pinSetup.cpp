@@ -17,7 +17,7 @@ void pinSetup() {
 
   // SD card
   pinMode(CHIP_SELECT, OUTPUT);
-  pinMode(CARD_DETECT, INPUT);
+  pinMode(CARD_DETECT, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(CARD_DETECT), sdChange, CHANGE);
 
   // Ultrasonic sensor

@@ -28,7 +28,6 @@ bool sdInserted() {
 
 // Determine next state when SD card is inserted or removed
 void sdChange() {
-  delay(100);
   if (sdInserted()) NEXT_STATE = STATE_SD_SETUP;
   else {
     Timer1.attachInterrupt(led, 10000);
@@ -484,7 +483,9 @@ void sdSetup() {
 
   }
 
-  if (NEXT_STATE != STATE_WARNING && NEXT_STATE != STATE_ERROR) NEXT_STATE = STATE_STANDBY;
+  if (NEXT_STATE != STATE_WARNING && NEXT_STATE != STATE_ERROR) {
+    NEXT_STATE = STATE_STANDBY;
+  }
 
 
 } // End of sdSetup
@@ -569,7 +570,7 @@ bool dataFileHeader() {
 
 // Log measured data to data file (floating point)
 // Returns true if successful, false if unsuccessful
-bool logData_float(measurement_float data) {
+bool logData(measurement data) {
 
   dataFile = SD.open(dataFileName, FILE_WRITE);
   if (dataFile) {
@@ -598,7 +599,7 @@ bool logData_float(measurement_float data) {
   else return false;
 
 
-} // End of logData_float
+} // End of logData
 
 
 
@@ -606,27 +607,27 @@ bool logData_float(measurement_float data) {
 
 // Log measured data to data file (fixed point)
 // Returns true if successful, false if unsuccessful
-bool logData_fixed(measurement_fixed data) {
+bool logData_fp(measurement_fp data_fp) {
 
   dataFile = SD.open(dataFileName, FILE_WRITE);
   if (dataFile) {
 
     if (SETTINGS.rawData) {
-      dataFile.print(data.time);
+      dataFile.print(data_fp.time);
       dataFile.print("E-6,");
-      dataFile.print(data.pingTime);
+      dataFile.print(data_fp.pingTime);
       dataFile.print("E-6,");
-      dataFile.print(data.temperature);
+      dataFile.print(data_fp.temperature);
       dataFile.print("E-6,");
-      dataFile.print(data.speedOfSound);
+      dataFile.print(data_fp.speedOfSound);
       dataFile.print("E-6,");
-      dataFile.print(data.distance);
+      dataFile.print(data_fp.distance);
       dataFile.println("E-9");
     }
     else {
-      dataFile.print(data.time);
+      dataFile.print(data_fp.time);
       dataFile.print("E-6,");
-      dataFile.print(data.distance);
+      dataFile.print(data_fp.distance);
       dataFile.println("E-9");
     }
     dataFile.close();
@@ -635,7 +636,7 @@ bool logData_fixed(measurement_fixed data) {
   }
   else return false;
 
-} // End of logData_fixed
+} // End of logData
 
 
 
