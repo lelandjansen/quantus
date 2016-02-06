@@ -11,38 +11,38 @@ uint32_t PERIOD;
 
 
 // Take measurements (floating point)
-measurement_float takeMeasurement_float() {
+measurement takeMeasurement() {
 
-  measurement_float data;
+  measurement data;
 
   data.time         = (double)micros() * 1.e-6 - START_TIME_DOUBLE;
-  data.pingTime     = measurePingTime_float();
-  data.temperature  = measureTemperature_float();
+  data.pingTime     = measurePingTime();
+  data.temperature  = measureTemperature();
   data.speedOfSound = computeSpeedOfSound(data.temperature);
-  data.distance     = computeDistance_float(data.pingTime, data.speedOfSound);
+  data.distance     = computeDistance(data.pingTime, data.speedOfSound);
 
   return data;
 
-} // End of takeMeasurement_float
+} // End of takeMeasurement
 
 
 
 
 
 // Take measurements (fixed point)
-measurement_fixed takeMeasurement_fixed() {
+measurement_fp takeMeasurement_fp() {
 
-  measurement_fixed data;
+  measurement_fp data_fp;
 
-  data.time         = micros() - START_TIME_INT;
-  data.pingTime     = measurePingTime_fixed();
-  data.temperature  = measureTemperature_fixed();
-  data.speedOfSound = computeSpeedOfSoundLinearApproximation(data.temperature);
-  data.distance     = computeDistance_fixed(data.pingTime, data.speedOfSound);
+  data_fp.time         = micros() - START_TIME_INT;
+  data_fp.pingTime     = measurePingTime_fp();
+  data_fp.temperature  = measureTemperature_fp();
+  data_fp.speedOfSound = computeSpeedOfSoundLinearApproximation_fp(data_fp.temperature);
+  data_fp.distance     = computeDistance_fp(data_fp.pingTime, data_fp.speedOfSound);
 
-  return data;
+  return data_fp;
 
-} // End of takeMeasurement_fixed
+} // End of takeMeasurement
 
 
 
@@ -72,13 +72,13 @@ void dataSetup() {
   // Compute initial temperature and speed of sound, and derivate values
   // Convert to fixed-point
 
-  // // Measure temperature once but do not use reading
-  // measureTemperature_float();
-  // delay(100);
+  // Measure temperature once but do not use reading
+  measureTemperature();
+  delay(100);
 
   // Take floating point measurements and convert to fixed point
 
-  temperatureInitial       = measureTemperature_float();
+  temperatureInitial       = measureTemperature();
   TEMPERATURE_INITIAL      = (uint32_t)(temperatureInitial * 1e6);
 
   speedOfSoundInitial      = computeSpeedOfSound(temperatureInitial);
@@ -113,7 +113,7 @@ void dataSetup() {
 
 
 // Collect data (floating point)
-void dataCollect_float() {
+void dataCollect() {
 
 
 
@@ -125,10 +125,10 @@ void dataCollect_float() {
     LAST_DATA_COLLECT = micros();
 
     // Take measurements (floating point)
-    measurement_float data = takeMeasurement_float();
+    measurement data = takeMeasurement();
 
     // Write measurement to data file on the SD card
-    if (!logData_float(data)) {
+    if (!logData(data)) {
       NEXT_STATE = STATE_ERROR;
       return;
     }
@@ -149,13 +149,13 @@ void dataCollect_float() {
 
   } // End of if
 
-} // End of dataCollect_float
+} // End of dataCollect
 
 
 
 
 // Collect data (fixed point)
-void dataCollect_fixed() {
+void dataCollect_fp() {
 
 
 
@@ -167,10 +167,10 @@ void dataCollect_fixed() {
     LAST_DATA_COLLECT = micros();
 
     // Take measurements (fixed point)
-    measurement_fixed data = takeMeasurement_fixed();
+    measurement_fp data_fp = takeMeasurement_fp();
 
     // Write measurement to data file on the SD card
-    if (!logData_fixed(data)) {
+    if (!logData_fp(data_fp)) {
       NEXT_STATE = STATE_ERROR;
       return;
     }
@@ -190,7 +190,7 @@ void dataCollect_fixed() {
 
   } // End of if
 
-} // End of dataCollect_fixed
+} // End of dataCollect_fp
 
 
 

@@ -6,8 +6,5 @@
 
 // Standby state
 void standby() {
-
-  if (sdInserted()) measureTemperature_float();
-  else  NEXT_STATE = STATE_NO_SD;
-
+  return; // Do nothing
 } // End of standby
