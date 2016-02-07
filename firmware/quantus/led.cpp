@@ -149,7 +149,7 @@ void ledCountdown() {
 void led() {
 
   // If button has been pressed and it is possible to advance to the next state
-  if (digitalRead(HIGH) == LOW &&
+  if (digitalRead(BUTTON) == HIGH &&
       STATE != STATE_NO_SD &&
       STATE != STATE_SD_SETUP &&
       STATE != STATE_DATA_CONCLUDE &&

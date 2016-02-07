@@ -27,12 +27,12 @@
 
 
 // Arduino analog pins
-#define TEMPERATURE_PIN       0
+// Unused                     0
 // Unused                     1
 // Unused                     2
 // Unused                     3
 // Unused                     4
-// Unused                     5
+#define TEMPERATURE_PIN       5
 
 
 
@@ -76,7 +76,7 @@ typedef struct {
   double temperature;
   double speedOfSound;
   double distance;
-} measurement;
+} measurement_float;
 
 // Measurement struct
 // For use with fixed-point calculations
@@ -87,7 +87,7 @@ typedef struct {
   uint32_t temperature;
   uint32_t speedOfSound;
   uint32_t distance;
-} measurement_fp;
+} measurement_fixed;
 
 
 
