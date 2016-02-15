@@ -70,12 +70,6 @@ void dataSetup() {
 
 
   // Compute initial temperature and speed of sound, and derivate values
-  // Convert to fixed-point
-
-  // // Measure temperature once but do not use reading
-  // measureTemperature_float();
-  // delay(100);
-
   // Take floating point measurements and convert to fixed point
 
   temperatureInitial       = measureTemperature_float();
@@ -98,6 +92,10 @@ void dataSetup() {
     return;
   }
 
+
+  // Take temperature measurement but do not use reading
+  measureTemperature_fixed();
+  
 
   NEXT_STATE = STATE_DATA_COLLECT;
 
