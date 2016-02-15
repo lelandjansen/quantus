@@ -196,7 +196,7 @@ void led() {
         break;
 
       case STATE_DATA_CONCLUDE:
-        // Pulsing blue/magenta
+      // Pulsing blue/magenta
         analogWrite(LED_RED,   pulse()/2);
         analogWrite(LED_GREEN, 255);
         analogWrite(LED_BLUE,    0);
