@@ -218,8 +218,8 @@ bool getSettingsFromFile() {
     // Return false if a warning cannot be written to the error log file
 
     // rawData (0)
-    if (SETTINGS.rawData != true &&
-        SETTINGS.rawData != false) {
+    if (SETTINGS.rawData != false &&
+        SETTINGS.rawData != true) {
       SETTINGS.rawData = SETTINGS_DEFAULT.rawData;
       if (!logSettingsFileError(true, 0)) return false;
     }
@@ -273,9 +273,8 @@ bool getSettingsFromFile() {
     }
 
     // autoTemperature (6)
-    if (SETTINGS.autoTemperature == NULL ||
-       (SETTINGS.autoTemperature != false &&
-        SETTINGS.autoTemperature != true)) {
+    if (SETTINGS.autoTemperature != false &&
+        SETTINGS.autoTemperature != true) {
       SETTINGS.autoTemperature = SETTINGS_DEFAULT.autoTemperature;
       if (!logSettingsFileError(true, 6)) return false;
     }

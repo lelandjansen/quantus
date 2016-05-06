@@ -9,68 +9,68 @@ volatile uint8_t PULSE_COUNT;
 
 // Turn RGB LED off
 void ledOff() {
-  analogWrite(LED_RED,   255);
-  analogWrite(LED_GREEN, 255);
-  analogWrite(LED_BLUE,  255);
+  analogWrite(LED_RED,   LED_OFF);
+  analogWrite(LED_GREEN, LED_OFF);
+  analogWrite(LED_BLUE,  LED_OFF);
 } // End of ledOff
 
 
 
 // Make RGB LED solid white
 void ledWhite() {
-  analogWrite(LED_RED,     0);
-  analogWrite(LED_GREEN,   0);
-  analogWrite(LED_BLUE,    0);
+  analogWrite(LED_RED,   LED_ON);
+  analogWrite(LED_GREEN, LED_ON);
+  analogWrite(LED_BLUE,  LED_ON);
 } // End of ledWhite
 
 
 // Make RGB LED solid red
 void ledRed() {
-  analogWrite(LED_RED,     0);
-  analogWrite(LED_GREEN, 255);
-  analogWrite(LED_BLUE,  255);
+  analogWrite(LED_RED,   LED_ON);
+  analogWrite(LED_GREEN, LED_OFF);
+  analogWrite(LED_BLUE,  LED_OFF);
 } // End of ledGreen
 
 
 // Make RGB LED solid yellow
 void ledYellow() {
-  analogWrite(LED_RED,     0);
-  analogWrite(LED_GREEN,   0);
-  analogWrite(LED_BLUE,  255);
+  analogWrite(LED_RED,   LED_ON);
+  analogWrite(LED_GREEN, LED_ON);
+  analogWrite(LED_BLUE,  LED_OFF);
 } // End of ledYellow
 
 
 
 // Make RGB LED solid green
 void ledGreen() {
-  analogWrite(LED_RED,   255);
-  analogWrite(LED_GREEN,   0);
-  analogWrite(LED_BLUE,  255);
+  analogWrite(LED_RED,   LED_OFF);
+  analogWrite(LED_GREEN, LED_ON);
+  analogWrite(LED_BLUE,  LED_OFF);
 } // End of ledGreen
 
 
 
 // Make RGB LED solid cyan
 void ledCyan() {
-  analogWrite(LED_RED,   255);
-  analogWrite(LED_GREEN,   0);
-  analogWrite(LED_BLUE,    0);
+  analogWrite(LED_RED,   LED_OFF);
+  analogWrite(LED_GREEN, LED_ON);
+  analogWrite(LED_BLUE,  LED_ON);
 } // End of ledCyan
 
 
 // Make RGB LED solid blue
 void ledBlue() {
-  analogWrite(LED_RED,   255);
-  analogWrite(LED_GREEN, 255);
-  analogWrite(LED_BLUE,    0);
+  analogWrite(LED_RED,   LED_OFF);
+  analogWrite(LED_GREEN, LED_OFF);
+  analogWrite(LED_BLUE,  LED_ON);
 } // End of ledBlue
 
 
 // Make RGB LED solid magenta
 void ledMagenta() {
-  analogWrite(LED_RED,     0);
-  analogWrite(LED_GREEN, 255);
-  analogWrite(LED_BLUE,    0);
+  analogWrite(LED_RED,   LED_ON);
+  analogWrite(LED_GREEN, LED_OFF);
+  analogWrite(LED_BLUE,  LED_ON);
 } // End of ledMagenta
 
 
@@ -80,24 +80,28 @@ void ledMagenta() {
 // Respiration equation:
 // f(x) = (exp(sin(x))-1/e)(255/(e-1/e))
 uint8_t pulse() {
-  // f(0) to f(63)
-  if (PULSE_COUNT >= 0 && PULSE_COUNT <= 63) {
-    return PULSE_A[PULSE_COUNT];
-  }
-  // f(64) to f(127)
-  else if (PULSE_COUNT >= 64 && PULSE_COUNT <= 127) {
-    // == PULSE_A[64-(PULSE_COUNT-64)-1]
-    return PULSE_A[127-PULSE_COUNT];
-  }
-  // f(128) to f(191)
-  else if (PULSE_COUNT >= 128 && PULSE_COUNT <= 191) {
-    return PULSE_B[PULSE_COUNT-128];
-  }
-  // f(192) to f(255)
-  else if (PULSE_COUNT >= 192 && PULSE_COUNT <= 255) {
-    // == PULSE_B[192-(PULSE_COUNT-64)-1]
-    return PULSE_B[255-PULSE_COUNT];
-  }
+
+  return (exp(sin(PULSE_COUNT*2*M_PI/256))-(1/M_E))*(255/(exp(1)-1/M_E));
+
+
+  // // f(0) to f(63)
+  // if (PULSE_COUNT >= 0 && PULSE_COUNT <= 63) {
+  //   return PULSE_A[PULSE_COUNT];
+  // }
+  // // f(64) to f(127)
+  // else if (PULSE_COUNT >= 64 && PULSE_COUNT <= 127) {
+  //   // == PULSE_A[64-(PULSE_COUNT-64)-1]
+  //   return PULSE_A[127-PULSE_COUNT];
+  // }
+  // // f(128) to f(191)
+  // else if (PULSE_COUNT >= 128 && PULSE_COUNT <= 191) {
+  //   return PULSE_B[PULSE_COUNT-128];
+  // }
+  // // f(192) to f(LED_OFF)
+  // else if (PULSE_COUNT >= 192 && PULSE_COUNT <= 255) {
+  //   // == PULSE_B[192-(PULSE_COUNT-64)-1]
+  //   return PULSE_B[LED_OFF-PULSE_COUNT];
+  // }
 
 } // End of pulse
 
@@ -167,23 +171,23 @@ void led() {
 
       case STATE_NO_SD:
         // Pulsing red/orange
-        analogWrite(LED_RED,   0);
-        analogWrite(LED_GREEN, 255-pulse()/4);
-        analogWrite(LED_BLUE,  255);
+        analogWrite(LED_RED,   LED_ON);
+        analogWrite(LED_GREEN, pulse()/2);
+        analogWrite(LED_BLUE,  LED_OFF);
         break;
 
       case STATE_SD_SETUP:
         // Pulsing blue/magenta
         analogWrite(LED_RED,   pulse()/2);
-        analogWrite(LED_GREEN, 255);
-        analogWrite(LED_BLUE,    0);
+        analogWrite(LED_GREEN, LED_OFF);
+        analogWrite(LED_BLUE,  LED_ON);
         break;
 
       case STATE_STANDBY:
         // Pulsing blue/cyan
-        analogWrite(LED_RED,   255);
+        analogWrite(LED_RED,   LED_OFF);
         analogWrite(LED_GREEN, pulse());
-        analogWrite(LED_BLUE,    0);
+        analogWrite(LED_BLUE,  LED_ON);
         break;
 
       case STATE_DATA_SETUP:
@@ -198,20 +202,20 @@ void led() {
       case STATE_DATA_CONCLUDE:
       // Pulsing blue/magenta
         analogWrite(LED_RED,   pulse()/2);
-        analogWrite(LED_GREEN, 255);
-        analogWrite(LED_BLUE,    0);
+        analogWrite(LED_GREEN, LED_OFF);
+        analogWrite(LED_BLUE,  LED_ON);
         break;
 
       case STATE_WARNING:
         // Blinking red/yellow
-        if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63) ||
+        if ((PULSE_COUNT >= LED_ON && PULSE_COUNT <=  63) ||
             (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) ledRed();
         else ledYellow();
         break;
 
       case STATE_ERROR:
       // Blinking red/white
-      if ((PULSE_COUNT >=   0 && PULSE_COUNT <=  63) ||
+      if ((PULSE_COUNT >= LED_ON && PULSE_COUNT <=  63) ||
           (PULSE_COUNT >= 128 && PULSE_COUNT <= 191)) ledRed();
       else ledWhite();
       break;

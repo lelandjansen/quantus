@@ -13,7 +13,7 @@ void setup() {
 
   // Set up timer interrupt
   // Run the led function ten times per second
-  Timer1.initialize(10000);
+  Timer1.initialize(20000);
   Timer1.attachInterrupt(led);
   PULSE_COUNT = 0;
 
