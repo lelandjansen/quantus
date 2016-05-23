@@ -1,0 +1,498 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		71FEC9BF1CF353660033D3BF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FEC9BE1CF353660033D3BF /* AppDelegate.swift */; };
+		71FEC9C11CF353660033D3BF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FEC9C01CF353660033D3BF /* ViewController.swift */; };
+		71FEC9C31CF353660033D3BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 71FEC9C21CF353660033D3BF /* Assets.xcassets */; };
+		71FEC9C61CF353660033D3BF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71FEC9C41CF353660033D3BF /* Main.storyboard */; };
+		71FEC9D11CF353660033D3BF /* quantusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FEC9D01CF353660033D3BF /* quantusTests.swift */; };
+		71FEC9DC1CF353660033D3BF /* quantusUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71FEC9DB1CF353660033D3BF /* quantusUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		71FEC9CD1CF353660033D3BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 71FEC9B31CF353650033D3BF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 71FEC9BA1CF353660033D3BF;
+			remoteInfo = quantus;
+		};
+		71FEC9D81CF353660033D3BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 71FEC9B31CF353650033D3BF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 71FEC9BA1CF353660033D3BF;
+			remoteInfo = quantus;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		71FEC9BB1CF353660033D3BF /* quantus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = quantus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		71FEC9BE1CF353660033D3BF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		71FEC9C01CF353660033D3BF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		71FEC9C21CF353660033D3BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		71FEC9C51CF353660033D3BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		71FEC9C71CF353660033D3BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		71FEC9CC1CF353660033D3BF /* quantusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = quantusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		71FEC9D01CF353660033D3BF /* quantusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = quantusTests.swift; sourceTree = "<group>"; };
+		71FEC9D21CF353660033D3BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		71FEC9D71CF353660033D3BF /* quantusUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = quantusUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		71FEC9DB1CF353660033D3BF /* quantusUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = quantusUITests.swift; sourceTree = "<group>"; };
+		71FEC9DD1CF353660033D3BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		71FEC9B81CF353660033D3BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		71FEC9C91CF353660033D3BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		71FEC9D41CF353660033D3BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		71FEC9B21CF353650033D3BF = {
+			isa = PBXGroup;
+			children = (
+				71FEC9BD1CF353660033D3BF /* quantus */,
+				71FEC9CF1CF353660033D3BF /* quantusTests */,
+				71FEC9DA1CF353660033D3BF /* quantusUITests */,
+				71FEC9BC1CF353660033D3BF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		71FEC9BC1CF353660033D3BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				71FEC9BB1CF353660033D3BF /* quantus.app */,
+				71FEC9CC1CF353660033D3BF /* quantusTests.xctest */,
+				71FEC9D71CF353660033D3BF /* quantusUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		71FEC9BD1CF353660033D3BF /* quantus */ = {
+			isa = PBXGroup;
+			children = (
+				71FEC9BE1CF353660033D3BF /* AppDelegate.swift */,
+				71FEC9C01CF353660033D3BF /* ViewController.swift */,
+				71FEC9C21CF353660033D3BF /* Assets.xcassets */,
+				71FEC9C41CF353660033D3BF /* Main.storyboard */,
+				71FEC9C71CF353660033D3BF /* Info.plist */,
+			);
+			path = quantus;
+			sourceTree = "<group>";
+		};
+		71FEC9CF1CF353660033D3BF /* quantusTests */ = {
+			isa = PBXGroup;
+			children = (
+				71FEC9D01CF353660033D3BF /* quantusTests.swift */,
+				71FEC9D21CF353660033D3BF /* Info.plist */,
+			);
+			path = quantusTests;
+			sourceTree = "<group>";
+		};
+		71FEC9DA1CF353660033D3BF /* quantusUITests */ = {
+			isa = PBXGroup;
+			children = (
+				71FEC9DB1CF353660033D3BF /* quantusUITests.swift */,
+				71FEC9DD1CF353660033D3BF /* Info.plist */,
+			);
+			path = quantusUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		71FEC9BA1CF353660033D3BF /* quantus */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 71FEC9E01CF353660033D3BF /* Build configuration list for PBXNativeTarget "quantus" */;
+			buildPhases = (
+				71FEC9B71CF353660033D3BF /* Sources */,
+				71FEC9B81CF353660033D3BF /* Frameworks */,
+				71FEC9B91CF353660033D3BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = quantus;
+			productName = quantus;
+			productReference = 71FEC9BB1CF353660033D3BF /* quantus.app */;
+			productType = "com.apple.product-type.application";
+		};
+		71FEC9CB1CF353660033D3BF /* quantusTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 71FEC9E31CF353660033D3BF /* Build configuration list for PBXNativeTarget "quantusTests" */;
+			buildPhases = (
+				71FEC9C81CF353660033D3BF /* Sources */,
+				71FEC9C91CF353660033D3BF /* Frameworks */,
+				71FEC9CA1CF353660033D3BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				71FEC9CE1CF353660033D3BF /* PBXTargetDependency */,
+			);
+			name = quantusTests;
+			productName = quantusTests;
+			productReference = 71FEC9CC1CF353660033D3BF /* quantusTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		71FEC9D61CF353660033D3BF /* quantusUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 71FEC9E61CF353660033D3BF /* Build configuration list for PBXNativeTarget "quantusUITests" */;
+			buildPhases = (
+				71FEC9D31CF353660033D3BF /* Sources */,
+				71FEC9D41CF353660033D3BF /* Frameworks */,
+				71FEC9D51CF353660033D3BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				71FEC9D91CF353660033D3BF /* PBXTargetDependency */,
+			);
+			name = quantusUITests;
+			productName = quantusUITests;
+			productReference = 71FEC9D71CF353660033D3BF /* quantusUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		71FEC9B31CF353650033D3BF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Leland Jansen";
+				TargetAttributes = {
+					71FEC9BA1CF353660033D3BF = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+					71FEC9CB1CF353660033D3BF = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 71FEC9BA1CF353660033D3BF;
+					};
+					71FEC9D61CF353660033D3BF = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 71FEC9BA1CF353660033D3BF;
+					};
+				};
+			};
+			buildConfigurationList = 71FEC9B61CF353650033D3BF /* Build configuration list for PBXProject "quantus" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 71FEC9B21CF353650033D3BF;
+			productRefGroup = 71FEC9BC1CF353660033D3BF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				71FEC9BA1CF353660033D3BF /* quantus */,
+				71FEC9CB1CF353660033D3BF /* quantusTests */,
+				71FEC9D61CF353660033D3BF /* quantusUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		71FEC9B91CF353660033D3BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71FEC9C31CF353660033D3BF /* Assets.xcassets in Resources */,
+				71FEC9C61CF353660033D3BF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		71FEC9CA1CF353660033D3BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		71FEC9D51CF353660033D3BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		71FEC9B71CF353660033D3BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71FEC9C11CF353660033D3BF /* ViewController.swift in Sources */,
+				71FEC9BF1CF353660033D3BF /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		71FEC9C81CF353660033D3BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71FEC9D11CF353660033D3BF /* quantusTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		71FEC9D31CF353660033D3BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71FEC9DC1CF353660033D3BF /* quantusUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		71FEC9CE1CF353660033D3BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 71FEC9BA1CF353660033D3BF /* quantus */;
+			targetProxy = 71FEC9CD1CF353660033D3BF /* PBXContainerItemProxy */;
+		};
+		71FEC9D91CF353660033D3BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 71FEC9BA1CF353660033D3BF /* quantus */;
+			targetProxy = 71FEC9D81CF353660033D3BF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		71FEC9C41CF353660033D3BF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				71FEC9C51CF353660033D3BF /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		71FEC9DE1CF353660033D3BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		71FEC9DF1CF353660033D3BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		71FEC9E11CF353660033D3BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = quantus/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelandjansen.quantus;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		71FEC9E21CF353660033D3BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = quantus/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelandjansen.quantus;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		71FEC9E41CF353660033D3BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = quantusTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelandjansen.quantusTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/quantus.app/Contents/MacOS/quantus";
+			};
+			name = Debug;
+		};
+		71FEC9E51CF353660033D3BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = quantusTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelandjansen.quantusTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/quantus.app/Contents/MacOS/quantus";
+			};
+			name = Release;
+		};
+		71FEC9E71CF353660033D3BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = quantusUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelandjansen.quantusUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = quantus;
+			};
+			name = Debug;
+		};
+		71FEC9E81CF353660033D3BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = quantusUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelandjansen.quantusUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = quantus;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		71FEC9B61CF353650033D3BF /* Build configuration list for PBXProject "quantus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71FEC9DE1CF353660033D3BF /* Debug */,
+				71FEC9DF1CF353660033D3BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		71FEC9E01CF353660033D3BF /* Build configuration list for PBXNativeTarget "quantus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71FEC9E11CF353660033D3BF /* Debug */,
+				71FEC9E21CF353660033D3BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		71FEC9E31CF353660033D3BF /* Build configuration list for PBXNativeTarget "quantusTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71FEC9E41CF353660033D3BF /* Debug */,
+				71FEC9E51CF353660033D3BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		71FEC9E61CF353660033D3BF /* Build configuration list for PBXNativeTarget "quantusUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71FEC9E71CF353660033D3BF /* Debug */,
+				71FEC9E81CF353660033D3BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 71FEC9B31CF353650033D3BF /* Project object */;
+}
