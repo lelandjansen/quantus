@@ -33,6 +33,8 @@
 // Unused                     3
 // Unused                     4
 #define TEMPERATURE_PIN       5
+// Unused                     6
+// Unused                     7
 
 
 
