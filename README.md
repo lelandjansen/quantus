@@ -1,6 +1,7 @@
 # Quantus
+[![Analytics](https://ga-beacon.appspot.com/UA-46915227-3/quantus)](https://github.com/igrigorik/ga-beacon)
 
-Work in progress
+Work in progress 
 
 ![Quantus logo](quantus_echo_logo.png)
 
