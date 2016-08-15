@@ -1,0 +1,7 @@
+#ifndef STATEMACHINE_STATE_MACHINE_H_
+#define STATEMACHINE_STATE_MACHINE_H_
+
+#include <iostream>
+
+#endif //STATEMACHINE_STATE_MACHINE_H_
+
